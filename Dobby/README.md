@@ -28,4 +28,4 @@ every 30 minutes during market hours, and a report runs at 5:15 PM ET.
 .\dobby_report.ps1
 ```
 
-Keys go in `Dobby/.env` (gitignored) locally, and in the repo secrets `COPY_APCA_API_KEY_ID` and `COPY_APCA_API_SECRET_KEY` for GitHub Actions.
+Keys go in `Dobby/.env` (gitignored) locally, and in the repo secrets `COPY_APCA_API_KEY` and `COPY_APCA_API_SECRET` for GitHub Actions.

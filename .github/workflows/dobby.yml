@@ -6,7 +6,7 @@
 #   9:45 AM-3:45 PM ET  copy    (every 30 min, at :15/:45 to stay clear of Mason's :05/:35)
 #   5:15 PM ET          report  (logs the day's account value vs. SPY)
 #
-# Required repo secrets: COPY_APCA_API_KEY_ID, COPY_APCA_API_SECRET_KEY
+# Required repo secrets: COPY_APCA_API_KEY, COPY_APCA_API_SECRET
 
 name: Dobby
 
@@ -38,8 +38,8 @@ jobs:
         shell: powershell
         working-directory: Dobby
     env:
-      APCA_API_KEY_ID: ${{ secrets.COPY_APCA_API_KEY_ID }}
-      APCA_API_SECRET_KEY: ${{ secrets.COPY_APCA_API_SECRET_KEY }}
+      APCA_API_KEY_ID: ${{ secrets.COPY_APCA_API_KEY }}
+      APCA_API_SECRET_KEY: ${{ secrets.COPY_APCA_API_SECRET }}
     steps:
       - uses: actions/checkout@v5
 
