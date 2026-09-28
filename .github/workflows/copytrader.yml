@@ -1,0 +1,91 @@
+# CopyTrader schedule on GitHub Actions: mirrors Nancy Pelosi's disclosed trades
+# (scraped from capitoltrades.com) into a separate Alpaca paper account.
+#
+# Cron is UTC and ignores daylight saving, so each task is listed at both
+# possible offsets and the "Pick task" step keeps only runs inside the ET window:
+#   9:45 AM-3:45 PM ET  copy    (every 30 min, at :15/:45 to stay clear of Mason's :05/:35)
+#   5:15 PM ET          report  (logs the day's account value vs. SPY)
+#
+# Required repo secrets: COPY_APCA_API_KEY_ID, COPY_APCA_API_SECRET_KEY
+
+name: CopyTrader
+
+on:
+  schedule:
+    - cron: "15,45 13-20 * * 1-5" # copy
+    - cron: "15 21,22 * * 1-5"    # report
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Which task to run now
+        type: choice
+        options: [copy, dryrun, report]
+        default: dryrun
+
+concurrency:
+  group: copytrader
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: powershell
+        working-directory: CopyTrader
+    env:
+      APCA_API_KEY_ID: ${{ secrets.COPY_APCA_API_KEY_ID }}
+      APCA_API_SECRET_KEY: ${{ secrets.COPY_APCA_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Pick task
+        id: pick
+        run: |
+          $et = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, "Eastern Standard Time")
+          $mins = $et.Hour * 60 + $et.Minute
+          $task = "skip"
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $task = "${{ inputs.task }}"
+          } else {
+            switch ("${{ github.event.schedule }}") {
+              "15,45 13-20 * * 1-5" { if ($mins -ge 570 -and $mins -lt 960)   { $task = "copy" } }    # 9:30-4:00 ET
+              "15 21,22 * * 1-5"    { if ($mins -ge 1020 -and $mins -lt 1080) { $task = "report" } }  # 5:00-6:00 ET
+            }
+          }
+          Write-Host "Eastern time: $($et.ToString('yyyy-MM-dd HH:mm')) -> task: $task"
+          "task=$task" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Copy trades
+        if: steps.pick.outputs.task == 'copy'
+        run: .\copytrader.ps1
+
+      - name: Dry run
+        if: steps.pick.outputs.task == 'dryrun'
+        run: .\copytrader.ps1 -DryRun
+
+      - name: Report
+        if: steps.pick.outputs.task == 'report'
+        run: .\copy_report.ps1 -SaveToFile
+
+      - name: Save state and logs
+        if: always() && steps.pick.outputs.task != 'skip' && steps.pick.outputs.task != 'dryrun'
+        run: |
+          git config user.name "copytrader-bot"
+          git config user.email "copytrader-bot@users.noreply.github.com"
+          git add -A state logs
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "CopyTrader ${{ steps.pick.outputs.task }} run"
+            for ($i = 1; $i -le 3; $i++) {
+              git pull --rebase
+              git push
+              if ($LASTEXITCODE -eq 0) { break }
+              Start-Sleep -Seconds (10 * $i)
+            }
+          }
+          exit 0

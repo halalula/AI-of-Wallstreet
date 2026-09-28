@@ -1,0 +1,34 @@
+{
+  "agentName": "CopyTrader",
+  "mode": "paper",
+
+  "politicians": [
+    { "id": "P000197", "name": "Nancy Pelosi" }
+  ],
+
+  "firstRunBackfillDays": 45,
+  "maxDisclosureAgeDays": 45,
+
+  "sizeTiers": [
+    { "maxValue": 15000,     "pctOfEquity": 2 },
+    { "maxValue": 50000,     "pctOfEquity": 3 },
+    { "maxValue": 100000,    "pctOfEquity": 4 },
+    { "maxValue": 250000,    "pctOfEquity": 5 },
+    { "maxValue": 500000,    "pctOfEquity": 6 },
+    { "maxValue": 1000000,   "pctOfEquity": 8 },
+    { "maxValue": 5000000,   "pctOfEquity": 10 },
+    { "maxValue": 999999999, "pctOfEquity": 12 }
+  ],
+
+  "maxSymbolPctOfEquity": 25,
+  "cashReservePct": 5,
+  "minOrderUSD": 5,
+
+  "optionSingleContractMaxPctOfEquity": 20,
+  "optionStockProxyFallback": true,
+  "minDaysToExpiryToOpen": 14,
+  "closeOptionsDaysBeforeExpiry": 3,
+
+  "maxOrderAttempts": 3,
+  "sellMode": "all"
+}

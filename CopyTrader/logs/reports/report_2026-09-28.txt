@@ -1,0 +1,8 @@
+﻿=== CopyTrader report 2026-09-28 (copying: Nancy Pelosi) ===
+Account value: $10,000.00   cash: $10,000.00
+Since 2026-09-28: CopyTrader +0.00%  vs  SPY +0.00%  (edge +0.00 pts)
+
+Positions:
+  (none)
+
+Recent copy activity:
