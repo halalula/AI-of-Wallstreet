@@ -1,0 +1,28 @@
+{
+  "agentName": "Mason",
+  "mode": "paper",
+  "watchlist": ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN"],
+
+  "maxPositionPctOfEquity": 10,
+  "maxPositionCapUSD": 2000,
+  "maxDailyLossPct": 3,
+
+  "buyConfidenceThreshold": 55,
+  "sellConfidenceThreshold": 45,
+
+  "minTradesPerDay": 3,
+  "maxTradesPerDay": 6,
+  "forcedTradeMinConfidence": 45,
+
+  "technicalWeight": 0.6,
+  "sentimentWeight": 0.4,
+
+  "shortMaPeriod": 10,
+  "longMaPeriod": 30,
+  "rsiPeriod": 14,
+
+  "newsLookbackDays": 3,
+  "newsLimitPerSymbol": 10,
+
+  "negativePoliticalDiscount": 0.8
+}

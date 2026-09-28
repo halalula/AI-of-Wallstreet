@@ -1,0 +1,95 @@
+# Mason's work schedule on GitHub Actions (runs while your PC is off).
+#
+# GitHub cron is UTC and ignores daylight saving, so each task is scheduled at
+# both possible UTC offsets (EDT = UTC-4, EST = UTC-5) and the "Pick task" step
+# keeps only the run that lands in Mason's Eastern Time window:
+#   7:30 AM ET        prepare  (dry-run analysis, no orders)
+#   9:35 AM-3:35 PM   trade    (every 30 min; the agent skips itself if the market is closed)
+#   5:00 PM ET        wrapup   (saves the day's report to logs/reports)
+#
+# State (state/, logs/) is committed back to the repo after each run so the
+# next run remembers today's trade count and start-of-day equity.
+#
+# Required repo secrets: APCA_API_KEY_ID, APCA_API_SECRET_KEY
+
+name: Mason
+
+on:
+  schedule:
+    - cron: "30 11,12 * * 1-5"   # prepare
+    - cron: "5,35 13-20 * * 1-5" # trade
+    - cron: "0 21,22 * * 1-5"    # wrapup
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Which task to run now
+        type: choice
+        options: [trade, prepare, wrapup]
+        default: prepare
+
+concurrency:
+  group: mason
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    env:
+      APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+      APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick task
+        id: pick
+        shell: powershell
+        run: |
+          $et = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, "Eastern Standard Time")
+          $mins = $et.Hour * 60 + $et.Minute
+          $task = "skip"
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $task = "${{ inputs.task }}"
+          } else {
+            switch ("${{ github.event.schedule }}") {
+              "30 11,12 * * 1-5"   { if ($mins -ge 420 -and $mins -lt 495)  { $task = "prepare" } }  # 7:00-8:15 ET
+              "5,35 13-20 * * 1-5" { if ($mins -ge 570 -and $mins -lt 960)  { $task = "trade" } }    # 9:30-4:00 ET
+              "0 21,22 * * 1-5"    { if ($mins -ge 1020 -and $mins -lt 1075) { $task = "wrapup" } }  # 5:00-5:55 ET
+            }
+          }
+          Write-Host "Eastern time: $($et.ToString('yyyy-MM-dd HH:mm')) -> task: $task"
+          "task=$task" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Prepare (dry run)
+        if: steps.pick.outputs.task == 'prepare'
+        shell: powershell
+        run: .\confidence_agent.ps1 -DryRun
+
+      - name: Trade
+        if: steps.pick.outputs.task == 'trade'
+        shell: powershell
+        run: .\confidence_agent.ps1
+
+      - name: Wrap-up report
+        if: steps.pick.outputs.task == 'wrapup'
+        shell: powershell
+        run: .\mason_report.ps1 -SaveToFile
+
+      - name: Save state and logs
+        if: always() && steps.pick.outputs.task != 'skip'
+        shell: powershell
+        run: |
+          git config user.name "mason-bot"
+          git config user.email "mason-bot@users.noreply.github.com"
+          git add -A state logs
+          if (Test-Path pending_live_orders.json) { git add pending_live_orders.json }
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Mason ${{ steps.pick.outputs.task }} run"
+            git pull --rebase
+            git push
+          }
+          exit 0
