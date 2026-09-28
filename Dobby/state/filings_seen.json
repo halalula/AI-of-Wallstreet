@@ -1,0 +1,184 @@
+﻿[
+    {
+        "docId":  "20035392",
+        "politician":  "David Taylor",
+        "filed":  "2026-09-05",
+        "trades":  9,
+        "note":  ""
+    },
+    {
+        "docId":  "20033845",
+        "politician":  "David Taylor",
+        "filed":  "2026-01-21",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035471",
+        "politician":  "David Taylor",
+        "filed":  "2026-09-17",
+        "trades":  2,
+        "note":  ""
+    },
+    {
+        "docId":  "20034280",
+        "politician":  "David Taylor",
+        "filed":  "2026-04-02",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034036",
+        "politician":  "David Taylor",
+        "filed":  "2026-02-20",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034138",
+        "politician":  "David Taylor",
+        "filed":  "2026-03-06",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035023",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-07-30",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034780",
+        "politician":  "David Taylor",
+        "filed":  "2026-06-12",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034295",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-04-07",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20033858",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-02-03",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20033916",
+        "politician":  "David Taylor",
+        "filed":  "2026-02-02",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035146",
+        "politician":  "David Taylor",
+        "filed":  "2026-08-06",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034179",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-03-17",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035345",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-09-02",
+        "trades":  1,
+        "note":  ""
+    },
+    {
+        "docId":  "20034489",
+        "politician":  "David Taylor",
+        "filed":  "2026-05-07",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034591",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-06-03",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034894",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-07-16",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034207",
+        "politician":  "David Taylor",
+        "filed":  "2026-03-20",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035289",
+        "politician":  "David Taylor",
+        "filed":  "2026-08-20",
+        "trades":  5,
+        "note":  ""
+    },
+    {
+        "docId":  "20034897",
+        "politician":  "David Taylor",
+        "filed":  "2026-07-01",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034650",
+        "politician":  "David Taylor",
+        "filed":  "2026-05-28",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20033918",
+        "politician":  "David Taylor",
+        "filed":  "2026-02-02",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20033732",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-01-16",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034800",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-06-26",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034357",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-04-20",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034018",
+        "politician":  "Cleo Fields",
+        "filed":  "2026-02-24",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    }
+]

@@ -3,7 +3,8 @@
   "mode": "paper",
 
   "politicians": [
-    { "id": "P000197", "name": "Nancy Pelosi" }
+    { "name": "David Taylor", "last": "Taylor", "stateDst": "OH02" },
+    { "name": "Cleo Fields",  "last": "Fields", "stateDst": "LA06" }
   ],
 
   "firstRunBackfillDays": 45,

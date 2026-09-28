@@ -1,5 +1,5 @@
-# Dobby schedule on GitHub Actions: mirrors Nancy Pelosi's disclosed trades
-# (scraped from capitoltrades.com) into a separate Alpaca paper account.
+# Dobby schedule on GitHub Actions: mirrors Reps. David Taylor and Cleo Fields'
+# disclosed trades (official House Clerk filings) into a separate Alpaca paper account.
 #
 # Cron is UTC and ignores daylight saving, so each task is listed at both
 # possible offsets and the "Pick task" step keeps only runs inside the ET window:

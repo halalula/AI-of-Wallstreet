@@ -1,31 +1,47 @@
 # Dobby
 
-Copies Nancy Pelosi's disclosed trades from [Capitol Trades](https://www.capitoltrades.com/politicians/P000197)
-into a separate Alpaca **paper** account. It runs on GitHub Actions (`.github/workflows/dobby.yml`)
-every 30 minutes during market hours, and a report runs at 5:15 PM ET.
+Copies the disclosed stock trades of **Rep. David Taylor (OH-02)** and **Rep. Cleo Fields (LA-06)** into a
+separate Alpaca **paper** account. It runs on GitHub Actions (`.github/workflows/dobby.yml`) every 30 minutes
+during market hours, and a report runs at 5:15 PM ET.
+
+## Why these two
+I replayed 2 years of trades for about 50 actively trading members of Congress. Each purchase was bought on the
+day it became public and sold when the sale was disclosed, and duplicate lots were removed. Taylor and Fields
+fit the "active, many small-to-medium wins" profile best:
+
+| | Buys/month | Trades that made money | Avg vs SPY per trade | Same, without the 2 best trades |
+|---|---|---|---|---|
+| Taylor, last 12 months | 6.6 | 70% | +0.9% | +0.1% |
+| Fields, 2 years | 3.9 | 71% | +9.8% | +4.7% |
+
+Most other very active traders (Khanna, McCaul, Cisneros, McClain) did slightly worse than SPY. Pelosi and
+Moskowitz beat it mostly through a couple of huge winners. Past results don't predict future ones.
+
+## Data source
+The **official House Clerk disclosures** at disclosures-clerk.house.gov. Every morning around 9 AM ET, Dobby
+reads the Clerk's filing index and downloads each new Periodic Transaction Report PDF for these two members. It
+reads the PDFs with [PdfPig](https://github.com/UglyToad/PdfPig) (`lib/`, from nuget.org). Filings show up here
+a few days before Capitol Trades posts them. Capitol Trades also blocks GitHub's servers, so it can't be used.
 
 | File | Purpose |
 |---|---|
-| `dobby.ps1` | Scrapes her trades, copies new ones, retries unfilled orders, closes options near expiry. `-DryRun` plans without trading. |
+| `dobby.ps1` | Reads new filings, copies trades, retries unfilled orders, closes options near expiry. `-DryRun` plans without trading. |
 | `dobby_report.ps1` | Account value vs. SPY since day one (`logs/equity_history.csv`), positions, recent activity. |
-| `dobby_config.json` | Who to copy, position sizing tiers, caps, options rules. |
-| `state/processed_trades.json` | Every disclosure the bot has seen and what it did with it. |
+| `dobby_config.json` | Who to copy (House last name + state/district), sizing tiers, caps, options rules. |
+| `state/filings_seen.json` | Every filing Dobby has read. |
+| `state/processed_trades.json` | Every trade in those filings and what Dobby did with it. |
 | `logs/copy_log.csv` | Each order and skip, with the reason. |
 
 ## How trades are copied
-
-- **Timing:** members of Congress have up to 45 days to disclose, so every copy is late by design. The bot acts on a disclosure the first market-hours run after Capitol Trades publishes it.
-- **Sizing:** her size bracket maps to a share of our equity (for example, $1M–$5M → 10%). No single ticker can be more than 25% of the account, and 5% stays in cash.
-- **Options:** the bot buys the exact contract (same ticker, expiry, strike, call or put) with a limit order at the ask. Her contracts are usually deep in-the-money LEAPS that cost $7k–$17k each. When one contract won't fit the budget, it buys the stock as a proxy and sells that proxy when she sells the option.
-- **Sells:** when she sells, we close our whole position in that name. Her filings don't show what fraction of her holding she sold.
-- **Exercises:** the bot sells the matching contract and buys the stock with the proceeds.
-- **Skipped:** donations, private funds and LLCs without a ticker, and "exchange" transactions.
+- **Timing:** members of Congress have up to 45 days to disclose, so every copy is late by design.
+- **Sizing:** their amount bracket maps to a share of our equity. Their usual $1K–$15K trades become 2% each, and larger brackets scale up to 12%. No single ticker can be more than 25% of the account, and 5% stays in cash.
+- **Sells:** when they sell, we close our whole position in that name. Sells of stocks we don't hold are skipped.
+- **Options:** the bot buys the exact contract (ticker, expiry, strike, call or put) with a limit order at the ask. If one contract won't fit the budget, it buys the stock as a proxy.
+- **Skipped:** bonds, funds and other non-stock assets, exchanges, gifts and donations, and scanned paper filings that have no readable text.
 
 ## Run locally
-
 ```powershell
 .\dobby.ps1 -DryRun
 .\dobby_report.ps1
 ```
-
 Keys go in `Dobby/.env` (gitignored) locally, and in the repo secrets `COPY_APCA_API_KEY` and `COPY_APCA_API_SECRET` for GitHub Actions.

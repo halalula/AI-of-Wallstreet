@@ -1,9 +1,9 @@
-# Dobby -- mirrors a politician's disclosed trades (from capitoltrades.com)
+# Dobby -- mirrors politicians' disclosed trades (official House Clerk filings)
 # into an Alpaca PAPER account.
 #
 # Each run:
-#   1. Scrapes the politician's trade list from Capitol Trades (the page embeds
-#      the full trade JSON, including the options description text).
+#   1. Downloads the House Clerk's filing index, and reads any new Periodic
+#      Transaction Report PDFs for the politicians in dobby_config.json.
 #   2. Checks earlier submitted orders (filled / expired -> retry / failed).
 #   3. For every new disclosure, copies it:
 #        stock buy   -> notional market buy, sized by the disclosure's size bracket
@@ -21,7 +21,9 @@
 
 param(
     # Scrape and plan, but never submit orders or change state.
-    [switch]$DryRun
+    [switch]$DryRun,
+    # Alternate config (for testing); defaults to dobby_config.json.
+    [string]$ConfigPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,7 +47,8 @@ $headers = @{
     "APCA-API-SECRET-KEY" = $env:APCA_API_SECRET_KEY
 }
 
-$cfg = Get-Content (Join-Path $root "dobby_config.json") -Raw | ConvertFrom-Json
+if (-not $ConfigPath) { $ConfigPath = Join-Path $root "dobby_config.json" }
+$cfg = Get-Content $ConfigPath -Raw | ConvertFrom-Json
 if ($cfg.mode -ne "paper") { Write-Error "Dobby only supports mode=paper."; exit 1 }
 $tradingBase = "https://paper-api.alpaca.markets/v2"
 $dataBase    = "https://data.alpaca.markets"
@@ -84,49 +87,106 @@ function Alpaca($method, $path, $body) {
     return Invoke-RestMethod @req
 }
 
-# ---------- 1. Scrape Capitol Trades ----------
-# Capitol Trades rejects PowerShell's web client (TLS fingerprint), so use curl.exe.
-function Get-PoliticianTrades($pol) {
-    $url = "https://www.capitoltrades.com/trades?politician=$($pol.id)&pageSize=96"
-    $tmp = Join-Path ([IO.Path]::GetTempPath()) "ct_$($pol.id).html"
-    $ua  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"
-    $code = ""
+# ---------- 1. Read filings from the House Clerk ----------
+# The Clerk publishes a daily index of every disclosure (updated ~9 AM ET) and
+# each Periodic Transaction Report (PTR) as a PDF. PTR PDFs are encrypted, so
+# they are read with PdfPig (lib/, from nuget.org) rather than by hand.
+$clerk = "https://disclosures-clerk.house.gov/public_disc"
+$ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Dobby/1.0"
+$cacheDir = Join-Path ([IO.Path]::GetTempPath()) "dobby"
+New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
+
+function Get-Url($url, $outFile) {
     for ($i = 1; $i -le 3; $i++) {
-        $code = & curl.exe -s --compressed -A $ua -H "Accept: text/html" -H "Accept-Language: en-US,en;q=0.9" -o $tmp -w "%{http_code}" $url
-        if ($code -eq "200") { break }
-        Write-Host "Capitol Trades returned HTTP $code (attempt $i), retrying..."
-        Start-Sleep -Seconds (15 * $i)
+        $code = & curl.exe -s -L -A $ua -o $outFile -w "%{http_code}" $url
+        if ($code -eq "200") { return }
+        Write-Host "HTTP $code for $url (attempt $i)"
+        Start-Sleep -Seconds (10 * $i)
     }
-    if ($code -ne "200") { throw "Capitol Trades fetch failed for $($pol.name): HTTP $code" }
-    $html = [IO.File]::ReadAllText($tmp, [Text.Encoding]::UTF8)
+    throw "Download failed: $url"
+}
 
-    # The trade data lives in Next.js flight chunks: self.__next_f.push([1,"<escaped json>"])
-    $sb = New-Object Text.StringBuilder
-    foreach ($m in [regex]::Matches($html, 'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')) {
-        [void]$sb.Append([regex]::Unescape($m.Groups[1].Value))
-    }
-    $flight = $sb.ToString()
-
-    $trades = @{}
-    $pos = 0
-    while (($start = $flight.IndexOf('{"_issuerId":', $pos)) -ge 0) {
-        # Walk to the matching closing brace, skipping braces inside strings.
-        $depth = 0; $inStr = $false; $end = -1
-        for ($j = $start; $j -lt $flight.Length; $j++) {
-            $c = $flight[$j]
-            if ($inStr) {
-                if ($c -eq '\') { $j++ } elseif ($c -eq '"') { $inStr = $false }
-            } elseif ($c -eq '"') { $inStr = $true }
-            elseif ($c -eq '{') { $depth++ }
-            elseif ($c -eq '}') { $depth--; if ($depth -eq 0) { $end = $j; break } }
+$pdfLibLoaded = $false
+function Get-PdfText($path) {
+    if (-not $script:pdfLibLoaded) {
+        # Load order matters on Windows PowerShell 5.1 (.NET Framework).
+        $lib = Join-Path $root "lib"
+        foreach ($n in "System.Runtime.CompilerServices.Unsafe", "System.Buffers", "System.Numerics.Vectors", "System.Memory",
+                       "System.ValueTuple", "Microsoft.Bcl.HashCode", "UglyToad.PdfPig.Core", "UglyToad.PdfPig.Tokens",
+                       "UglyToad.PdfPig.Tokenization", "UglyToad.PdfPig.Fonts", "UglyToad.PdfPig", "UglyToad.PdfPig.DocumentLayoutAnalysis") {
+            [void][Reflection.Assembly]::LoadFrom((Join-Path $lib "$n.dll"))
         }
-        if ($end -lt 0) { break }
-        $pos = $end + 1
-        try { $t = $flight.Substring($start, $end - $start + 1) | ConvertFrom-Json } catch { continue }
-        if (-not $t._txId -or $t._politicianId -ne $pol.id) { continue }
-        $trades["$($t._txId)"] = $t
+        $script:pdfLibLoaded = $true
     }
-    return $trades.Values
+    $doc = [UglyToad.PdfPig.PdfDocument]::Open($path)
+    try {
+        return ($doc.GetPages() | ForEach-Object { [UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor.ContentOrderTextExtractor]::GetText($_) }) -join "`n"
+    } finally { $doc.Dispose() }
+}
+
+function Get-FilingIndex {
+    $years = @($etNow.Year); if ($etNow.Month -eq 1) { $years += $etNow.Year - 1 }
+    $filings = @()
+    foreach ($y in $years) {
+        $zip = Join-Path $cacheDir "$($y)FD.zip"
+        Get-Url "$clerk/financial-pdfs/$($y)FD.zip" $zip
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $z = [IO.Compression.ZipFile]::OpenRead($zip)
+        try {
+            $entry = $z.Entries | Where-Object { $_.Name -eq "$($y)FD.xml" }
+            $reader = New-Object IO.StreamReader($entry.Open())
+            [xml]$xml = $reader.ReadToEnd(); $reader.Dispose()
+        } finally { $z.Dispose() }
+        foreach ($m in $xml.FinancialDisclosure.Member) {
+            if ($m.FilingType -ne "P") { continue }
+            $filings += [pscustomobject]@{
+                docId = "$($m.DocID)"; year = $y; last = "$($m.Last)"; stateDst = "$($m.StateDst)"
+                filed = [DateTime]::ParseExact("$($m.FilingDate)", "M/d/yyyy", $inv)
+            }
+        }
+    }
+    return $filings
+}
+
+# Amount brackets -> midpoint, matching how the size tiers are expressed.
+function Amount-Value($amt) {
+    $nums = @([regex]::Matches($amt, '\$([\d,]+)') | ForEach-Object { [double]($_.Groups[1].Value -replace ',', '') })
+    if ($nums.Count -ge 2) { return ($nums[0] + $nums[1]) / 2 }
+    if ($nums.Count -eq 1) { return $nums[0] }
+    return 0
+}
+
+# Parses a PTR's text into trade objects shaped for Parse-Trade.
+# Each row looks like: "<asset name> (TICKER) [ST] P 09/08/2026 09/09/2026 $1,001 - $15,000"
+# followed by detail lines (filing status, owner account, and a description --
+# which is where option strike/expiry is written).
+function Parse-Ptr($text, $filing) {
+    $rx = '\((?<tk>[A-Z][A-Z0-9.\-/]{0,7})\)\s*\[(?<at>[A-Z]{2})\]\s*(?<tx>P|S\s*\(partial\)|S|E)\s+(?<td>\d{2}/\d{2}/\d{4})\s+(?<nd>\d{2}/\d{2}/\d{4})\s+(?<amt>\$[\d,]+\s*-\s*\$[\d,]+|Over\s+\$[\d,]+|\$[\d,]+)'
+    $ms = [regex]::Matches($text, $rx)
+    $rows = @()
+    for ($i = 0; $i -lt $ms.Count; $i++) {
+        $m = $ms[$i]
+        $tailEnd = if ($i + 1 -lt $ms.Count) { $ms[$i + 1].Index } else { $text.Length }
+        $detail = ($text.Substring($m.Index + $m.Length, $tailEnd - $m.Index - $m.Length) -replace '\s+', ' ').Trim()
+        # Keep only the option description (if any); the rest is account names and page boilerplate.
+        $desc = ""
+        if ($detail -match '(?i)((?:purchased|bought|sold|sale of|exercised)\s+[\d,]+\s+(?:call|put)\s+options?.*?\d{1,2}/\d{1,2}/\d{2,4})') { $desc = $Matches[1] }
+        elseif ($detail -match '(?i)(contribution|gift|donat\w*)') { $desc = $Matches[1] }
+        $assetType = $m.Groups["at"].Value
+        $tx = $m.Groups["tx"].Value
+        $txType = if ($tx -eq "P") { "buy" } elseif ($tx -like "S*") { "sell" } else { "exchange" }
+        if ($assetType -notin "ST", "OP", "EF") { $txType = "unsupported asset type [$assetType]" }
+        $rows += [pscustomobject]@{
+            _txId = "$($filing.docId)-$($i + 1)"
+            txDate = [DateTime]::ParseExact($m.Groups["td"].Value, "MM/dd/yyyy", $inv).ToString("yyyy-MM-dd")
+            pubDate = $filing.filed.ToString("yyyy-MM-ddT13:00:00Z")
+            txType = $txType
+            value = Amount-Value $m.Groups["amt"].Value
+            issuer = [pscustomobject]@{ issuerTicker = ($m.Groups["tk"].Value -replace '/', '.') }
+            comment = ("[$assetType] $($m.Groups['amt'].Value -replace '\s+', ' ') $desc").Trim()
+        }
+    }
+    return $rows
 }
 
 # ---------- Trade classification ----------
@@ -185,10 +245,39 @@ function Save-State {
     ConvertTo-Json -InputObject $arr -Depth 5 | Out-File -FilePath $statePath -Encoding utf8
 }
 
+$seenPath = Join-Path $stateDir "filings_seen.json"
+$seen = @{}
+if (Test-Path $seenPath) { foreach ($s in (Get-Content $seenPath -Raw | ConvertFrom-Json)) { $seen["$($s.docId)"] = $s } }
+function Save-Seen {
+    if ($DryRun) { return }
+    ConvertTo-Json -InputObject @($seen.Values | Sort-Object docId) -Depth 3 | Out-File -FilePath $seenPath -Encoding utf8
+}
+
+$index = Get-FilingIndex
 $newCount = 0
 foreach ($pol in $cfg.politicians) {
-    $raw = Get-PoliticianTrades $pol
-    Write-Host "$($pol.name): $(@($raw).Count) disclosed trades on Capitol Trades"
+    $mine = @($index | Where-Object { $_.last -eq $pol.last -and $_.stateDst -eq $pol.stateDst } | Sort-Object filed)
+    $raw = @()
+    foreach ($f in $mine) {
+        if ($seen.ContainsKey($f.docId)) { continue }
+        $ageDays = ($etNow.Date - $f.filed).TotalDays
+        $limitDays = if ($firstRun) { $cfg.firstRunBackfillDays } else { $cfg.maxDisclosureAgeDays }
+        $entry = [ordered]@{ docId = $f.docId; politician = $pol.name; filed = $f.filed.ToString("yyyy-MM-dd"); trades = 0; note = "" }
+        if ($ageDays -gt $limitDays) {
+            $entry.note = "older than $limitDays-day window, not copied"
+        } else {
+            $pdf = Join-Path $cacheDir "$($f.docId).pdf"
+            Get-Url "$clerk/ptr-pdfs/$($f.year)/$($f.docId).pdf" $pdf
+            $text = Get-PdfText $pdf
+            $rows = @(Parse-Ptr $text $f)
+            if ($rows.Count -eq 0) { $entry.note = if ($text.Trim().Length -lt 50) { "scanned paper filing, no readable text" } else { "no stock/option rows found" } }
+            $entry.trades = $rows.Count
+            $raw += $rows
+            Write-Host "$($pol.name): filing $($f.docId) ($($entry.filed)) -> $($rows.Count) trades $($entry.note)"
+        }
+        $seen[$f.docId] = $entry
+    }
+    Write-Host "$($pol.name): $($mine.Count) filings in the Clerk index, $($raw.Count) new trades"
     foreach ($t in $raw) {
         if ($state.Contains("$($t._txId)")) { continue }
         $rec = Parse-Trade $t $pol.name
@@ -203,6 +292,7 @@ foreach ($pol in $cfg.politicians) {
 }
 Write-Host "New disclosures to copy: $newCount"
 Save-State
+Save-Seen
 
 # ---------- Market / account ----------
 $clock = Alpaca GET "/clock"
