@@ -1,4 +1,4 @@
-# CopyTrader performance report: account value over time vs. simply holding SPY.
+# Dobby performance report: account value over time vs. simply holding SPY.
 # Appends one row per day to logs/equity_history.csv and prints positions and
 # recent copy activity. -SaveToFile also writes logs/reports/report_<date>.txt.
 param([switch]$SaveToFile)
@@ -14,6 +14,7 @@ if (Test-Path $envFile) {
 $headers = @{ "APCA-API-KEY-ID" = $env:APCA_API_KEY_ID; "APCA-API-SECRET-KEY" = $env:APCA_API_SECRET_KEY }
 $base = "https://paper-api.alpaca.markets/v2"
 $inv  = [System.Globalization.CultureInfo]::InvariantCulture
+$cfg = Get-Content (Join-Path $root "dobby_config.json") -Raw | ConvertFrom-Json
 $logDir = Join-Path $root "logs"
 New-Item -ItemType Directory -Force -Path (Join-Path $logDir "reports") | Out-Null
 $histPath = Join-Path $logDir "equity_history.csv"
@@ -35,9 +36,9 @@ $botRet = ($equity / [double]$first.equity - 1) * 100
 $spyRet = ($spy / [double]$first.spy - 1) * 100
 
 $out = New-Object System.Collections.Generic.List[string]
-$out.Add("=== CopyTrader report $today (copying: Nancy Pelosi) ===")
+$out.Add("=== Dobby report $today (copying: $(($cfg.politicians | ForEach-Object { $_.name }) -join ", ")) ===")
 $out.Add(("Account value: `${0:N2}   cash: `${1:N2}" -f $equity, [double]$acct.cash))
-$out.Add(("Since {0}: CopyTrader {1:+0.00;-0.00}%  vs  SPY {2:+0.00;-0.00}%  (edge {3:+0.00;-0.00} pts)" -f $first.date, $botRet, $spyRet, ($botRet - $spyRet)))
+$out.Add(("Since {0}: Dobby {1:+0.00;-0.00}%  vs  SPY {2:+0.00;-0.00}%  (edge {3:+0.00;-0.00} pts)" -f $first.date, $botRet, $spyRet, ($botRet - $spyRet)))
 $out.Add("")
 $out.Add("Positions:")
 if ($positions.Count -eq 0) { $out.Add("  (none)") }

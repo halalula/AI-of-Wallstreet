@@ -1,14 +1,14 @@
-# CopyTrader
+# Dobby
 
 Copies Nancy Pelosi's disclosed trades from [Capitol Trades](https://www.capitoltrades.com/politicians/P000197)
-into a separate Alpaca **paper** account. It runs on GitHub Actions (`.github/workflows/copytrader.yml`)
+into a separate Alpaca **paper** account. It runs on GitHub Actions (`.github/workflows/dobby.yml`)
 every 30 minutes during market hours, and a report runs at 5:15 PM ET.
 
 | File | Purpose |
 |---|---|
-| `copytrader.ps1` | Scrapes her trades, copies new ones, retries unfilled orders, closes options near expiry. `-DryRun` plans without trading. |
-| `copy_report.ps1` | Account value vs. SPY since day one (`logs/equity_history.csv`), positions, recent activity. |
-| `copy_config.json` | Who to copy, position sizing tiers, caps, options rules. |
+| `dobby.ps1` | Scrapes her trades, copies new ones, retries unfilled orders, closes options near expiry. `-DryRun` plans without trading. |
+| `dobby_report.ps1` | Account value vs. SPY since day one (`logs/equity_history.csv`), positions, recent activity. |
+| `dobby_config.json` | Who to copy, position sizing tiers, caps, options rules. |
 | `state/processed_trades.json` | Every disclosure the bot has seen and what it did with it. |
 | `logs/copy_log.csv` | Each order and skip, with the reason. |
 
@@ -24,8 +24,8 @@ every 30 minutes during market hours, and a report runs at 5:15 PM ET.
 ## Run locally
 
 ```powershell
-.\copytrader.ps1 -DryRun
-.\copy_report.ps1
+.\dobby.ps1 -DryRun
+.\dobby_report.ps1
 ```
 
-Keys go in `CopyTrader\.env` (gitignored) locally, and in the repo secrets `COPY_APCA_API_KEY_ID` and `COPY_APCA_API_SECRET_KEY` for GitHub Actions.
+Keys go in `Dobby/.env` (gitignored) locally, and in the repo secrets `COPY_APCA_API_KEY_ID` and `COPY_APCA_API_SECRET_KEY` for GitHub Actions.

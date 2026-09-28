@@ -1,4 +1,4 @@
-# CopyTrader -- mirrors a politician's disclosed trades (from capitoltrades.com)
+# Dobby -- mirrors a politician's disclosed trades (from capitoltrades.com)
 # into an Alpaca PAPER account.
 #
 # Each run:
@@ -37,7 +37,7 @@ if (Test-Path $envFile) {
     }
 }
 if (-not $env:APCA_API_KEY_ID -or -not $env:APCA_API_SECRET_KEY) {
-    Write-Error "Set APCA_API_KEY_ID and APCA_API_SECRET_KEY in CopyTrader\.env first."
+    Write-Error "Set APCA_API_KEY_ID and APCA_API_SECRET_KEY in Dobby/.env first."
     exit 1
 }
 $headers = @{
@@ -45,8 +45,8 @@ $headers = @{
     "APCA-API-SECRET-KEY" = $env:APCA_API_SECRET_KEY
 }
 
-$cfg = Get-Content (Join-Path $root "copy_config.json") -Raw | ConvertFrom-Json
-if ($cfg.mode -ne "paper") { Write-Error "CopyTrader only supports mode=paper."; exit 1 }
+$cfg = Get-Content (Join-Path $root "dobby_config.json") -Raw | ConvertFrom-Json
+if ($cfg.mode -ne "paper") { Write-Error "Dobby only supports mode=paper."; exit 1 }
 $tradingBase = "https://paper-api.alpaca.markets/v2"
 $dataBase    = "https://data.alpaca.markets"
 $inv = [System.Globalization.CultureInfo]::InvariantCulture
@@ -388,4 +388,4 @@ foreach ($p in @($positions | Where-Object { $_.asset_class -eq "us_option" })) 
 }
 
 Save-State
-Write-Host "CopyTrader run complete."
+Write-Host "Dobby run complete."

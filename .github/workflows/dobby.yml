@@ -1,4 +1,4 @@
-# CopyTrader schedule on GitHub Actions: mirrors Nancy Pelosi's disclosed trades
+# Dobby schedule on GitHub Actions: mirrors Nancy Pelosi's disclosed trades
 # (scraped from capitoltrades.com) into a separate Alpaca paper account.
 #
 # Cron is UTC and ignores daylight saving, so each task is listed at both
@@ -8,7 +8,7 @@
 #
 # Required repo secrets: COPY_APCA_API_KEY_ID, COPY_APCA_API_SECRET_KEY
 
-name: CopyTrader
+name: Dobby
 
 on:
   schedule:
@@ -23,7 +23,7 @@ on:
         default: dryrun
 
 concurrency:
-  group: copytrader
+  group: dobby
   cancel-in-progress: false
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
     defaults:
       run:
         shell: powershell
-        working-directory: CopyTrader
+        working-directory: Dobby
     env:
       APCA_API_KEY_ID: ${{ secrets.COPY_APCA_API_KEY_ID }}
       APCA_API_SECRET_KEY: ${{ secrets.COPY_APCA_API_SECRET_KEY }}
@@ -62,25 +62,25 @@ jobs:
 
       - name: Copy trades
         if: steps.pick.outputs.task == 'copy'
-        run: .\copytrader.ps1
+        run: .\dobby.ps1
 
       - name: Dry run
         if: steps.pick.outputs.task == 'dryrun'
-        run: .\copytrader.ps1 -DryRun
+        run: .\dobby.ps1 -DryRun
 
       - name: Report
         if: steps.pick.outputs.task == 'report'
-        run: .\copy_report.ps1 -SaveToFile
+        run: .\dobby_report.ps1 -SaveToFile
 
       - name: Save state and logs
         if: always() && steps.pick.outputs.task != 'skip' && steps.pick.outputs.task != 'dryrun'
         run: |
-          git config user.name "copytrader-bot"
-          git config user.email "copytrader-bot@users.noreply.github.com"
+          git config user.name "dobby-bot"
+          git config user.email "dobby-bot@users.noreply.github.com"
           git add -A state logs
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
-            git commit -m "CopyTrader ${{ steps.pick.outputs.task }} run"
+            git commit -m "Dobby ${{ steps.pick.outputs.task }} run"
             for ($i = 1; $i -le 3; $i++) {
               git pull --rebase
               git push
