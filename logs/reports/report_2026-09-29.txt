@@ -1,0 +1,37 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260929210506
+Username: runnervm99s1a\runneradmin
+RunAs User: runnervm99s1a\runneradmin
+Configuration Name: 
+Machine: runnervm99s1a (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\11098621-9ed7-4805-94e8-e96477c663d1.ps1'
+Process ID: 8248
+PSVersion: 5.1.26100.33438
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33438
+BuildVersion: 10.0.26100.33438
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-09-29 ===
+[2026-09-29T13:45:01.8836152Z] NVDA sell x4
+  1) Confidence level : 44.8
+  2) Result           : FILLED 4 @ $229.88
+
+[2026-09-29T13:45:01.9805205Z] AMZN buy x3
+  1) Confidence level : 46.0
+  2) Result           : FILLED 3 @ $246.163333
+
+[2026-09-29T18:46:25.6414533Z] AMZN sell x3
+  1) Confidence level : 36.2
+  2) Result           : FILLED 3 @ $248.05
+
+--- Summary ---
+Filled: 3  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts: 3
+**********************
+Windows PowerShell transcript end
+End time: 20260929210507
+**********************
