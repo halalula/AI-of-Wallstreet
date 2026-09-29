@@ -49,3 +49,8 @@
 2026-09-28T20:18:24.2212260Z,paper,NVDA,62,53,True,46.7,hold,0,,""
 2026-09-28T20:18:24.2212260Z,paper,GOOGL,42,52,True,46.0,hold,0,,""
 2026-09-28T20:18:24.2232507Z,paper,AMZN,45,48,True,46.2,hold,0,,""
+2026-09-29T11:40:39.8085099Z,paper,AAPL,51,52,False,51.4,hold,0,,""
+2026-09-29T11:40:39.8145562Z,paper,MSFT,63,52,True,58.6,hold,0,,""
+2026-09-29T11:40:39.8203595Z,paper,NVDA,62,44,True,43.8,sell,4,,"DRY RUN: would sell 4 NVDA (not submitted)"
+2026-09-29T11:40:39.8203595Z,paper,GOOGL,31,50,True,38.6,hold,0,,""
+2026-09-29T11:40:39.8223862Z,paper,AMZN,42,52,True,46.0,buy,3,,"DRY RUN: would buy 3 AMZN (not submitted) [forced]"
