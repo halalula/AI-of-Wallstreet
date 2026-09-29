@@ -3,7 +3,8 @@
     "startEquity":  9978.12,
     "tradedSymbols":  [
                           "NVDA",
+                          "AMZN",
                           "AMZN"
                       ],
-    "tradeCount":  2
+    "tradeCount":  3
 }
