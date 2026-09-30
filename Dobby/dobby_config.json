@@ -4,7 +4,8 @@
 
   "politicians": [
     { "name": "David Taylor", "last": "Taylor", "stateDst": "OH02" },
-    { "name": "Cleo Fields",  "last": "Fields", "stateDst": "LA06" }
+    { "name": "Cleo Fields",  "last": "Fields", "stateDst": "LA06" },
+    { "name": "Jared Moskowitz", "last": "Moskowitz", "stateDst": "FL23" }
   ],
 
   "firstRunBackfillDays": 45,
