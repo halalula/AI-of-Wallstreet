@@ -42,8 +42,8 @@ $out.Add(("Since {0}: Dobby {1:+0.00;-0.00}%  vs  SPY {2:+0.00;-0.00}%  (edge {3
 $out.Add("")
 $out.Add("Positions:")
 if ($positions.Count -eq 0) { $out.Add("  (none)") }
-foreach ($p in $positions | Sort-Object { -[double]$_.market_value }) {
-    $out.Add(("  {0,-22} qty {1,10}  value `${2,10:N2}  P/L `${3,9:N2} ({4:+0.0;-0.0}%)" -f $p.symbol, $p.qty, [double]$p.market_value, [double]$p.unrealized_pl, [double]$p.unrealized_plpc * 100))
+foreach ($p in @($positions | Sort-Object { -[double]$_.market_value })) {
+    $out.Add(("  {0,-22} qty {1,10}  value `${2,10:N2}  P/L `${3,9:N2} ({4:+0.0;-0.0}%)" -f $p.symbol, $p.qty, [double]$p.market_value, [double]$p.unrealized_pl, ([double]$p.unrealized_plpc * 100)))
 }
 $out.Add("")
 $out.Add("Recent copy activity:")
