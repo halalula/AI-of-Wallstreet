@@ -239,12 +239,17 @@ function Get-SentimentScore {
 }
 
 # ---------- Position sizing ----------
+# Buys are limited to cash on hand so Mason never trades on margin, even though
+# the account's buying_power would allow it. Each planned buy reserves its cash.
+$script:availableCash = [double]$acct.cash
+
 function Get-OrderQty {
     param($lastClose)
     $capByPct = $equity * ($cfg.maxPositionPctOfEquity / 100)
-    $capUSD = [math]::Min($capByPct, $cfg.maxPositionCapUSD)
-    $qty = [math]::Floor($capUSD / $lastClose)
-    return [int]$qty
+    $capUSD = [math]::Min([math]::Min($capByPct, $cfg.maxPositionCapUSD), $script:availableCash)
+    $qty = [int][math]::Floor($capUSD / $lastClose)
+    if ($qty -ge 1) { $script:availableCash -= $qty * $lastClose }
+    return $qty
 }
 
 $agentName = if ($cfg.agentName) { $cfg.agentName } else { "Agent" }

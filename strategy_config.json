@@ -3,15 +3,15 @@
   "mode": "paper",
   "watchlist": ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN"],
 
-  "maxPositionPctOfEquity": 10,
-  "maxPositionCapUSD": 2000,
+  "maxPositionPctOfEquity": 25,
+  "maxPositionCapUSD": 3000,
   "maxDailyLossPct": 3,
 
   "buyConfidenceThreshold": 55,
   "sellConfidenceThreshold": 45,
 
-  "minTradesPerDay": 3,
-  "maxTradesPerDay": 6,
+  "minTradesPerDay": 4,
+  "maxTradesPerDay": 8,
   "forcedTradeMinConfidence": 45,
 
   "technicalWeight": 0.6,

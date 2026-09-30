@@ -11,14 +11,14 @@
   "maxDisclosureAgeDays": 45,
 
   "sizeTiers": [
-    { "maxValue": 15000,     "pctOfEquity": 2 },
-    { "maxValue": 50000,     "pctOfEquity": 3 },
-    { "maxValue": 100000,    "pctOfEquity": 4 },
-    { "maxValue": 250000,    "pctOfEquity": 5 },
-    { "maxValue": 500000,    "pctOfEquity": 6 },
-    { "maxValue": 1000000,   "pctOfEquity": 8 },
-    { "maxValue": 5000000,   "pctOfEquity": 10 },
-    { "maxValue": 999999999, "pctOfEquity": 12 }
+    { "maxValue": 15000,     "pctOfEquity": 6 },
+    { "maxValue": 50000,     "pctOfEquity": 9 },
+    { "maxValue": 100000,    "pctOfEquity": 12 },
+    { "maxValue": 250000,    "pctOfEquity": 15 },
+    { "maxValue": 500000,    "pctOfEquity": 18 },
+    { "maxValue": 1000000,   "pctOfEquity": 24 },
+    { "maxValue": 5000000,   "pctOfEquity": 30 },
+    { "maxValue": 999999999, "pctOfEquity": 36 }
   ],
 
   "maxSymbolPctOfEquity": 25,
