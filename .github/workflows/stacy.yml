@@ -1,0 +1,86 @@
+# Stacy on GitHub Actions: one staggered TSLA trade in her own Alpaca paper account.
+#
+# Runs every 5 minutes; the "Pick task" step keeps only runs between 9:30 AM
+# and 4:00 PM ET (cron is UTC and ignores daylight saving). The floor itself is
+# a GTC stop order at Alpaca, so it holds between runs; each run handles the
+# entry, the ladder-in and raising the trailing floor.
+#
+# Required repo secrets: STACY_APCA_API_KEY, STACY_APCA_API_SECRET
+
+name: Stacy
+
+on:
+  schedule:
+    - cron: "*/5 13-20 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Which task to run now
+        type: choice
+        options: [manage, dryrun, summary]
+        default: summary
+
+concurrency:
+  group: stacy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: powershell
+        working-directory: Stacy
+    env:
+      APCA_API_KEY_ID: ${{ secrets.STACY_APCA_API_KEY }}
+      APCA_API_SECRET_KEY: ${{ secrets.STACY_APCA_API_SECRET }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Pick task
+        id: pick
+        run: |
+          $et = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, "Eastern Standard Time")
+          $mins = $et.Hour * 60 + $et.Minute
+          $task = "skip"
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $task = "${{ inputs.task }}"
+          } elseif ($mins -ge 570 -and $mins -lt 960) {
+            $task = "manage"   # 9:30-4:00 ET
+          }
+          Write-Host "Eastern time: $($et.ToString('yyyy-MM-dd HH:mm')) -> task: $task"
+          "task=$task" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Manage trade
+        if: steps.pick.outputs.task == 'manage'
+        run: .\stacy.ps1
+
+      - name: Dry run
+        if: steps.pick.outputs.task == 'dryrun'
+        run: .\stacy.ps1 -DryRun
+
+      - name: Summary
+        if: steps.pick.outputs.task == 'summary'
+        run: .\stacy.ps1 -Summary
+
+      - name: Save state and logs
+        if: always() && steps.pick.outputs.task == 'manage'
+        run: |
+          git config user.name "stacy-bot"
+          git config user.email "stacy-bot@users.noreply.github.com"
+          git add -A state logs
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Stacy run"
+            for ($i = 1; $i -le 3; $i++) {
+              git pull --rebase
+              git push
+              if ($LASTEXITCODE -eq 0) { break }
+              Start-Sleep -Seconds (10 * $i)
+            }
+          }
+          exit 0

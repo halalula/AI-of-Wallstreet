@@ -1,0 +1,15 @@
+{
+  "agentName": "Stacy",
+  "mode": "paper",
+  "symbol": "TSLA",
+
+  "entryPctOfEquity": 90,
+
+  "stopLossPctOfEquity": 1,
+  "ladderLossPctOfEquity": 0.5,
+  "ladderSizeOfEntry": 0.5,
+
+  "trailActivatePctOfEquity": 2,
+  "trailPct": 5,
+  "trailStepPct": 5
+}
