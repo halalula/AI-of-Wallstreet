@@ -31,3 +31,4 @@
 2026-10-01T13:45:32.0391086Z,Jared Moskowitz,20035243-1,2026-07-13,2026-08-27T13:00:00Z,buy,AMAT,597.46,7c998ca7-9e04-4a3d-9a2d-ad18540dbaae,pending_new,"copy stock buy ([ST] $1,001 - $15,000)"
 2026-10-01T13:45:32.2511630Z,Jared Moskowitz,20035243-2,2026-07-13,2026-08-27T13:00:00Z,skip,STE,,,skipped,"we hold no STE stock"
 2026-10-01T13:45:32.4624759Z,Jared Moskowitz,20035243-3,2026-07-13,2026-08-27T13:00:00Z,skip,GWW,,,skipped,"we hold no GWW stock"
+2026-10-01T13:59:46.1860188Z,Jared Moskowitz,20035243-1,2026-07-13,2026-08-27T13:00:00Z,fill,AMAT,1.129343848,7c998ca7-9e04-4a3d-9a2d-ad18540dbaae,filled,"avg price 529.024"

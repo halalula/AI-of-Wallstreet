@@ -7,6 +7,13 @@
         "note":  "older than 45-day window, not copied"
     },
     {
+        "docId":  "20033760",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-01-16",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
         "docId":  "20033845",
         "politician":  "David Taylor",
         "filed":  "2026-01-21",
@@ -49,6 +56,13 @@
         "note":  "older than 45-day window, not copied"
     },
     {
+        "docId":  "20034129",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-03-30",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
         "docId":  "20034138",
         "politician":  "David Taylor",
         "filed":  "2026-03-06",
@@ -66,6 +80,13 @@
         "docId":  "20034207",
         "politician":  "David Taylor",
         "filed":  "2026-03-20",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034274",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-04-30",
         "trades":  0,
         "note":  "older than 45-day window, not copied"
     },
@@ -112,6 +133,13 @@
         "note":  "older than 45-day window, not copied"
     },
     {
+        "docId":  "20034749",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-06-19",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
         "docId":  "20034780",
         "politician":  "David Taylor",
         "filed":  "2026-06-12",
@@ -140,6 +168,13 @@
         "note":  "older than 45-day window, not copied"
     },
     {
+        "docId":  "20034963",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-07-26",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
         "docId":  "20035023",
         "politician":  "Cleo Fields",
         "filed":  "2026-07-30",
@@ -152,6 +187,13 @@
         "filed":  "2026-08-06",
         "trades":  0,
         "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035243",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-08-27",
+        "trades":  3,
+        "note":  ""
     },
     {
         "docId":  "20035289",
@@ -180,47 +222,5 @@
         "filed":  "2026-09-17",
         "trades":  2,
         "note":  ""
-    },
-    {
-        "docId":  "20034749",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-06-19",
-        "trades":  0,
-        "note":  "older than 45-day window, not copied"
-    },
-    {
-        "docId":  "20033760",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-01-16",
-        "trades":  0,
-        "note":  "older than 45-day window, not copied"
-    },
-    {
-        "docId":  "20034129",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-03-30",
-        "trades":  0,
-        "note":  "older than 45-day window, not copied"
-    },
-    {
-        "docId":  "20034963",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-07-26",
-        "trades":  0,
-        "note":  "older than 45-day window, not copied"
-    },
-    {
-        "docId":  "20035243",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-08-27",
-        "trades":  3,
-        "note":  ""
-    },
-    {
-        "docId":  "20034274",
-        "politician":  "Jared Moskowitz",
-        "filed":  "2026-04-30",
-        "trades":  0,
-        "note":  "older than 45-day window, not copied"
     }
 ]
