@@ -2,7 +2,9 @@
     "date":  "2026-10-01",
     "startEquity":  9989.39,
     "tradedSymbols":  [
-
+                          "AAPL",
+                          "MSFT",
+                          "NVDA"
                       ],
-    "tradeCount":  0
+    "tradeCount":  3
 }
