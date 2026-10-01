@@ -1,0 +1,30 @@
+﻿=== Dobby report 2026-10-01 (copying: David Taylor, Cleo Fields, Jared Moskowitz) ===
+Account value: $9,963.64   cash: $7,003.16
+Since 2026-09-28: Dobby -0.36%  vs  SPY -0.16%  (edge -0.20 pts)
+
+Positions:
+  AMAT                   qty 1.129343848  value $    596.52  P/L $    -0.93 (-0.2%)
+  AEP                    qty 3.404512558  value $    407.69  P/L $     7.83 (+2.0%)
+  GOOGL                  qty 1.166841705  value $    395.72  P/L $    -4.25 (-1.1%)
+  PG                     qty 2.714417669  value $    391.28  P/L $    -8.57 (-2.1%)
+  IBP                    qty 2.024460372  value $    390.11  P/L $    -9.81 (-2.5%)
+  AVGO                   qty 1.117632918  value $    385.94  P/L $   -13.92 (-3.5%)
+  AAPL                   qty 0.599343087  value $    197.93  P/L $    -2.06 (-1.0%)
+  FITB                   qty 3.873861654  value $    195.28  P/L $    -4.65 (-2.3%)
+
+Recent copy activity:
+  2026-09-29T14:00  fill   GOOGL                filled    avg price 342.78
+  2026-09-29T14:00  fill   IBP                  filled    avg price 197.544
+  2026-09-29T14:00  fill   PG                   filled    avg price 147.296
+  2026-09-29T14:00  fill   AAPL                 filled    avg price 333.682
+  2026-09-29T14:00  fill   AEP                  filled    avg price 117.45
+  2026-09-29T14:00  fill   AEP                  filled    avg price 117.45
+  2026-09-29T14:00  fill   AVGO                 filled    avg price 357.774
+  2026-09-29T14:00  fill   AVGO                 filled    avg price 357.774
+  2026-09-29T14:00  fill   FITB                 filled    avg price 51.61
+  2026-09-29T14:00  fill   PG                   filled    avg price 147.316
+  2026-09-29T14:00  fill   IBP                  filled    avg price 197.544
+  2026-10-01T13:45  buy    AMAT                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-01T13:45  skip   STE                  skipped   we hold no STE stock
+  2026-10-01T13:45  skip   GWW                  skipped   we hold no GWW stock
+  2026-10-01T13:59  fill   AMAT                 filled    avg price 529.024
