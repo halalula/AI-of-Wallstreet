@@ -180,5 +180,47 @@
         "filed":  "2026-09-17",
         "trades":  2,
         "note":  ""
+    },
+    {
+        "docId":  "20034749",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-06-19",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20033760",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-01-16",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034129",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-03-30",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20034963",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-07-26",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
+    },
+    {
+        "docId":  "20035243",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-08-27",
+        "trades":  3,
+        "note":  ""
+    },
+    {
+        "docId":  "20034274",
+        "politician":  "Jared Moskowitz",
+        "filed":  "2026-04-30",
+        "trades":  0,
+        "note":  "older than 45-day window, not copied"
     }
 ]
