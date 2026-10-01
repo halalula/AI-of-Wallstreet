@@ -1,0 +1,20 @@
+﻿{
+    "phase":  "active",
+    "symbol":  "TSLA",
+    "setupEquity":  10000,
+    "stopLossUSD":  100,
+    "ladderLossUSD":  50.0,
+    "trailActivateUSD":  200,
+    "entryOrderId":  "a5004dfd-3d1c-425d-ba71-4a44191a3f90",
+    "entryQty":  25,
+    "entryPrice":  357.7244,
+    "ladderPrice":  355.7244,
+    "ladderQty":  12,
+    "ladderDone":  false,
+    "ladderFillPrice":  null,
+    "floor":  353.73,
+    "stopOrderId":  "da2bec34-d582-4468-a77d-d3fb08efde17",
+    "trailingActive":  false,
+    "trailAnchor":  null,
+    "closedReason":  null
+}
