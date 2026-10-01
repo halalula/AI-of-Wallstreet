@@ -1,11 +1,8 @@
 ﻿{
-    "date":  "2026-09-30",
-    "startEquity":  9958.46,
+    "date":  "2026-10-01",
+    "startEquity":  9989.39,
     "tradedSymbols":  [
-                          "MSFT",
-                          "NVDA",
-                          "AMZN",
-                          "AMZN"
+
                       ],
-    "tradeCount":  4
+    "tradeCount":  0
 }
