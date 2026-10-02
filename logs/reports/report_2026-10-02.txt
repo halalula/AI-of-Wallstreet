@@ -1,0 +1,37 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261002210540
+Username: runnervmfi6oq\runneradmin
+RunAs User: runnervmfi6oq\runneradmin
+Configuration Name: 
+Machine: runnervmfi6oq (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\229f25b6-5199-4f34-a675-997c7f0d43ea.ps1'
+Process ID: 7256
+PSVersion: 5.1.26100.33438
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33438
+BuildVersion: 10.0.26100.33438
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-02 ===
+[2026-10-02T13:44:59.1152367Z] NVDA buy x11
+  1) Confidence level : 55.6
+  2) Result           : FILLED 11 @ $237.41
+
+[2026-10-02T13:44:59.2498092Z] GOOGL buy x7
+  1) Confidence level : 47.6
+  2) Result           : FILLED 7 @ $344.127143
+
+[2026-10-02T17:42:29.2744380Z] AAPL buy x7
+  1) Confidence level : 50.8
+  2) Result           : FILLED 7 @ $333.414286
+
+--- Summary ---
+Filled: 3  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts: 3
+**********************
+Windows PowerShell transcript end
+End time: 20261002210541
+**********************
