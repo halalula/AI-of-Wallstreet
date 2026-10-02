@@ -14,7 +14,7 @@
     "ladderFillPrice":  354.114167,
     "floor":  353.86,
     "stopOrderId":  "10f5e563-20f1-47a5-8760-2b8140670355",
-    "trailingActive":  false,
-    "trailAnchor":  null,
+    "trailingActive":  true,
+    "trailAnchor":  370.69,
     "closedReason":  null
 }
