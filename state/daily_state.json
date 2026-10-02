@@ -2,7 +2,8 @@
     "date":  "2026-10-02",
     "startEquity":  9986.44,
     "tradedSymbols":  [
-
+                          "NVDA",
+                          "GOOGL"
                       ],
-    "tradeCount":  0
+    "tradeCount":  2
 }
