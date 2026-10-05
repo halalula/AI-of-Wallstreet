@@ -2,7 +2,7 @@
     "date":  "2026-10-05",
     "startEquity":  9961.12,
     "tradedSymbols":  [
-
+                          "GOOGL"
                       ],
-    "tradeCount":  0
+    "tradeCount":  1
 }
