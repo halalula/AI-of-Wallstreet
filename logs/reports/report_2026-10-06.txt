@@ -1,0 +1,29 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261006210449
+Username: runnervmfi6oq\runneradmin
+RunAs User: runnervmfi6oq\runneradmin
+Configuration Name: 
+Machine: runnervmfi6oq (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\3a806d32-5167-4300-ac4e-61ade0732f2f.ps1'
+Process ID: 5392
+PSVersion: 5.1.26100.33438
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33438
+BuildVersion: 10.0.26100.33438
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-06 ===
+[2026-10-06T13:45:09.8995381Z] GOOGL buy x7
+  1) Confidence level : 49.0
+  2) Result           : FILLED 7 @ $345.822857
+
+--- Summary ---
+Filled: 1  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts:
+**********************
+Windows PowerShell transcript end
+End time: 20261006210450
+**********************
