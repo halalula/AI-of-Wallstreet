@@ -2,7 +2,8 @@
     "date":  "2026-10-07",
     "startEquity":  10040.02,
     "tradedSymbols":  [
-                          "MSFT"
+                          "MSFT",
+                          "AMZN"
                       ],
-    "tradeCount":  1
+    "tradeCount":  2
 }
