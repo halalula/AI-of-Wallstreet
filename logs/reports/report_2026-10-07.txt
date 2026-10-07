@@ -1,0 +1,37 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261007210623
+Username: runnervmfi6oq\runneradmin
+RunAs User: runnervmfi6oq\runneradmin
+Configuration Name: 
+Machine: runnervmfi6oq (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\7d4fe971-c7b3-472a-9791-d09f962562bc.ps1'
+Process ID: 8496
+PSVersion: 5.1.26100.33438
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33438
+BuildVersion: 10.0.26100.33438
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-07 ===
+[2026-10-07T13:45:00.9821083Z] MSFT sell x5
+  1) Confidence level : 39.8
+  2) Result           : FILLED 5 @ $526.712
+
+[2026-10-07T14:13:20.1239947Z] AMZN buy x10
+  1) Confidence level : 45.4
+  2) Result           : FILLED 10 @ $255.03
+
+[2026-10-07T16:46:49.4237543Z] AMZN sell x10
+  1) Confidence level : 44.2
+  2) Result           : FILLED 10 @ $258.64
+
+--- Summary ---
+Filled: 3  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts: 3
+**********************
+Windows PowerShell transcript end
+End time: 20261007210624
+**********************
