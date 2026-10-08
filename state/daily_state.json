@@ -2,7 +2,7 @@
     "date":  "2026-10-08",
     "startEquity":  10086.39,
     "tradedSymbols":  [
-
+                          "MSFT"
                       ],
-    "tradeCount":  0
+    "tradeCount":  1
 }
