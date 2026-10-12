@@ -1,0 +1,35 @@
+﻿=== Dobby report 2026-10-12 (copying: David Taylor, Cleo Fields, Jared Moskowitz) ===
+Account value: $10,156.80   cash: $2,201.79
+Since 2026-09-28: Dobby +1.57%  vs  SPY +1.65%  (edge -0.08 pts)
+
+Positions:
+  MSFT                   qty 2.326981234  value $  1,257.97  P/L $    57.62 (+4.8%)
+  HD                     qty 4.244934044  value $  1,234.21  P/L $    33.87 (+2.8%)
+  AAPL                   qty 2.401357235  value $    818.12  P/L $    17.98 (+2.2%)
+  NFLX                   qty 8.900341094  value $    628.81  P/L $    28.64 (+4.8%)
+  AMGN                   qty 1.487424906  value $    621.10  P/L $    20.93 (+3.5%)
+  GOOG                   qty 1.757123116  value $    613.76  P/L $    13.59 (+2.3%)
+  AMAT                   qty 1.129343848  value $    562.40  P/L $   -35.05 (-5.9%)
+  AEP                    qty 3.404512558  value $    422.94  P/L $    23.08 (+5.8%)
+  PG                     qty 2.714417669  value $    415.33  P/L $    15.48 (+3.9%)
+  GOOGL                  qty 1.166841705  value $    411.90  P/L $    11.93 (+3.0%)
+  AVGO                   qty 1.117632918  value $    396.57  P/L $    -3.29 (-0.8%)
+  IBP                    qty 2.024460372  value $    375.42  P/L $   -24.50 (-6.1%)
+  FITB                   qty 3.873861654  value $    196.48  P/L $    -3.45 (-1.7%)
+
+Recent copy activity:
+  2026-10-02T15:00  buy    GOOG                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-02T15:00  buy    NFLX                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-02T15:00  buy    AMGN                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-02T15:00  buy    HD                   pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-02T15:00  buy    HD                   pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-02T15:00  skip   MPC                  skipped   we hold no MPC stock
+  2026-10-02T15:00  skip   MPC                  skipped   we hold no MPC stock
+  2026-10-02T15:34  fill   AAPL                 filled    avg price 333.044
+  2026-10-02T15:34  fill   GOOG                 filled    avg price 341.564
+  2026-10-02T15:34  fill   MSFT                 filled    avg price 515.84
+  2026-10-02T15:34  fill   NFLX                 filled    avg price 67.432247
+  2026-10-02T15:34  fill   MSFT                 filled    avg price 515.84
+  2026-10-02T15:34  fill   HD                   filled    avg price 282.77
+  2026-10-02T15:34  fill   AMGN                 filled    avg price 403.496
+  2026-10-02T15:34  fill   HD                   filled    avg price 282.77
