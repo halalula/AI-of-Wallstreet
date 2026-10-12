@@ -2,7 +2,9 @@
     "date":  "2026-10-12",
     "startEquity":  10072.97,
     "tradedSymbols":  [
-
+                          "MSFT",
+                          "NVDA",
+                          "GOOGL"
                       ],
-    "tradeCount":  0
+    "tradeCount":  3
 }
