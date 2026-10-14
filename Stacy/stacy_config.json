@@ -1,7 +1,13 @@
 {
   "agentName": "Stacy",
   "mode": "paper",
-  "symbol": "TSLA",
+
+  "watchlist": ["TSLA"],
+  "entryStartET": "09:45",
+  "entryEndET": "15:30",
+  "cooldownMinutes": 30,
+  "rsiMin": 45,
+  "rsiMax": 70,
 
   "entryPctOfEquity": 90,
 

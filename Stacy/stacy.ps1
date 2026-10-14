@@ -1,7 +1,16 @@
-# Stacy -- one staggered trade with a hard floor, a ladder-in and a trailing floor,
-# in an Alpaca PAPER account.
+# Stacy -- trades one position at a time in an Alpaca PAPER account: waits for a
+# candle setup, enters, then manages the trade with a hard floor, a ladder-in and
+# a trailing floor. When the trade closes she goes back to scanning.
 #
-# Rules (dollar amounts are fixed from account equity when the trade opens):
+# Entry (all must hold, checked on completed 15-minute candles):
+#   Trend     daily close above its 20-day average, and that average rising.
+#   Intraday  price above today's VWAP, 9-EMA above 21-EMA, RSI(14) in range.
+#   Trigger   the last 15-min candle is a bullish engulfing, a hammer, or a
+#             green close above the previous 4 candles' highs (breakout).
+#   Window    only between entryStartET and entryEndET, and not within
+#             cooldownMinutes of the last exit.
+#
+# Trade rules (dollar amounts are fixed from account equity at each entry):
 #   Entry     buy entryPctOfEquity% of equity in whole shares at market.
 #   Floor     a GTC stop order sells everything if the total loss reaches
 #             stopLossPctOfEquity% of equity (1% = $100 on $10,000).
@@ -14,12 +23,13 @@
 #
 # The stop order lives at Alpaca, so the floor is enforced between runs. A stop
 # becomes a market order when hit, so a fast drop or a gap can lose a bit more
-# than the floor. SAFETY: orders only ever go to the paper endpoint.
+# than the floor. These are mechanical rules, not a prediction or advice.
+# SAFETY: orders only ever go to the paper endpoint.
 
 param(
     # Show what would happen, but never submit orders or change state.
     [switch]$DryRun,
-    # Print the rules, levels, open orders and position, then exit.
+    # Print the rules, levels / setup checks, open orders and position, then exit.
     [switch]$Summary
 )
 
@@ -49,7 +59,7 @@ if ($cfg.mode -ne "paper") { Write-Error "Stacy only supports mode=paper."; exit
 $tradingBase = "https://paper-api.alpaca.markets/v2"
 $dataBase    = "https://data.alpaca.markets/v2"
 $inv = [System.Globalization.CultureInfo]::InvariantCulture
-$sym = $cfg.symbol
+$etZone = [TimeZoneInfo]::FindSystemTimeZoneById("Eastern Standard Time")
 
 # ---------- Paths ----------
 $stateDir = Join-Path $root "state"
@@ -69,6 +79,13 @@ function Fmt($n) { return ([double]$n).ToString("0.00", $inv) }
 function CentsUp($n)   { return [math]::Ceiling([double]$n * 100) / 100 }
 function CentsDown($n) { return [math]::Floor([double]$n * 100) / 100 }
 
+function To-Date($s) {
+    if ($s -is [DateTime]) { return $s.ToUniversalTime() }
+    return [DateTime]::Parse("$s", $inv, [System.Globalization.DateTimeStyles]::AdjustToUniversal -bor [System.Globalization.DateTimeStyles]::AssumeUniversal)
+}
+function To-ET($utc) { return [TimeZoneInfo]::ConvertTimeFromUtc($utc, $etZone) }
+function ET-Minutes($hhmm) { $p = $hhmm.Split(":"); return [int]$p[0] * 60 + [int]$p[1] }
+
 function Write-Event($event, $qty, $price, $floor, $orderId, $note) {
     $ts = [DateTime]::UtcNow.ToString("o")
     $note = "$note" -replace '"', "'"
@@ -83,13 +100,17 @@ function Save-State {
     if (-not $DryRun) { $state | ConvertTo-Json -Depth 5 | Set-Content -Path $statePath -Encoding utf8 }
 }
 
-function Get-LastPrice {
-    $t = Invoke-RestMethod -Uri "$dataBase/stocks/$sym/trades/latest?feed=iex" -Headers $headers
+function Get-LastPrice($symbol) {
+    $t = Invoke-RestMethod -Uri "$dataBase/stocks/$symbol/trades/latest?feed=iex" -Headers $headers
     return [double]$t.trade.p
 }
 
 function Get-Position {
     try { return Alpaca GET "/positions/$sym" } catch { return $null }
+}
+
+function Get-AllPositions {
+    return ,@(Alpaca GET "/positions" | ForEach-Object { $_ } | Where-Object { $_.symbol })
 }
 
 function Wait-Order($id) {
@@ -101,9 +122,10 @@ function Wait-Order($id) {
     return $o
 }
 
-# PowerShell 5.1 turns an empty JSON array into one empty item, so keep only real orders.
+# PowerShell 5.1 turns an empty JSON array into one empty item, so keep only real
+# items; the leading comma stops a one-item list from unrolling (and losing .Count).
 function Get-OpenOrders {
-    return @(Alpaca GET "/orders?status=open&symbols=$sym" | ForEach-Object { $_ } | Where-Object { $_.id })
+    return ,@(Alpaca GET "/orders?status=open&symbols=$sym" | ForEach-Object { $_ } | Where-Object { $_.id })
 }
 
 function Cancel-OpenOrders {
@@ -122,6 +144,126 @@ function Place-Stop($qty, $stopPrice) {
     return $o
 }
 
+# ---------- Candles and indicators ----------
+function Get-Bars($symbol, $timeframe, $days) {
+    $start = [DateTime]::UtcNow.AddDays(-$days).ToString("yyyy-MM-ddTHH:mm:ssZ")
+    $url = "$dataBase/stocks/$symbol/bars?timeframe=$timeframe&start=$start&limit=10000&feed=iex&adjustment=split"
+    $bars = @((Invoke-RestMethod -Uri $url -Headers $headers).bars | Where-Object { $_.t })
+    foreach ($b in $bars) { $b.t = To-Date $b.t }
+    return $bars
+}
+
+function Get-Ema($values, $n) {
+    $k = 2 / ($n + 1)
+    $ema = $values[0]
+    for ($i = 1; $i -lt $values.Count; $i++) { $ema = $values[$i] * $k + $ema * (1 - $k) }
+    return $ema
+}
+
+function Get-Rsi($values, $n) {
+    $gain = 0; $loss = 0
+    for ($i = 1; $i -le $n; $i++) {
+        $d = $values[$i] - $values[$i - 1]
+        if ($d -gt 0) { $gain += $d } else { $loss -= $d }
+    }
+    $gain /= $n; $loss /= $n
+    for ($i = $n + 1; $i -lt $values.Count; $i++) {
+        $d = $values[$i] - $values[$i - 1]
+        $gain = ($gain * ($n - 1) + [math]::Max($d, 0)) / $n
+        $loss = ($loss * ($n - 1) + [math]::Max(-$d, 0)) / $n
+    }
+    if ($loss -eq 0) { return 100 }
+    return 100 - 100 / (1 + $gain / $loss)
+}
+
+# Reads the charts for one symbol and says whether there's an entry right now.
+function Find-Setup($symbol) {
+    $r = [ordered]@{ symbol = $symbol; ok = $false; trigger = $null; checks = [ordered]@{} }
+    $nowUtc = [DateTime]::UtcNow
+
+    # Daily trend.
+    $daily = @(Get-Bars $symbol "1Day" 60 | Where-Object { (To-ET $_.t).Date -lt (To-ET $nowUtc).Date })
+    if ($daily.Count -lt 26) { $r.checks["data"] = "only $($daily.Count) daily candles"; return $r }
+    $closes = @($daily | ForEach-Object { [double]$_.c })
+    $n = $closes.Count
+    $sma20     = ($closes[($n - 20)..($n - 1)] | Measure-Object -Average).Average
+    $sma20Prev = ($closes[($n - 25)..($n - 6)] | Measure-Object -Average).Average
+    $r.checks["daily close $(Fmt $closes[-1]) > 20-day avg $(Fmt $sma20)"] = ($closes[-1] -gt $sma20)
+    $r.checks["20-day avg rising (5 days ago $(Fmt $sma20Prev))"] = ($sma20 -gt $sma20Prev)
+
+    # Completed regular-hours 15-minute candles from the last few sessions.
+    $bars = @(Get-Bars $symbol "15Min" 7 | Where-Object {
+        $m = (To-ET $_.t).TimeOfDay.TotalMinutes
+        $m -ge 570 -and $m -lt 960 -and $_.t.AddMinutes(15) -le $nowUtc
+    })
+    if ($bars.Count -lt 30) { $r.checks["data"] = "only $($bars.Count) 15-min candles"; return $r }
+    $c = @($bars | ForEach-Object { [double]$_.c })
+    $ema9  = Get-Ema $c 9
+    $ema21 = Get-Ema $c 21
+    $rsi   = Get-Rsi $c 14
+
+    $today = (To-ET $nowUtc).Date
+    $todayBars = @($bars | Where-Object { (To-ET $_.t).Date -eq $today })
+    if ($todayBars.Count -lt 2) { $r.checks["data"] = "need 2 completed 15-min candles today"; return $r }
+    $pv = 0; $vol = 0
+    foreach ($b in $todayBars) { $pv += [double]$b.vw * [double]$b.v; $vol += [double]$b.v }
+    $vwap = if ($vol -gt 0) { $pv / $vol } else { [double]$todayBars[-1].c }
+
+    $last = $bars[-1]; $prev = $bars[-2]
+    $price = [double]$last.c
+    $r.price = $price
+    $r.checks["price $(Fmt $price) > VWAP $(Fmt $vwap)"] = ($price -gt $vwap)
+    $r.checks["9-EMA $(Fmt $ema9) > 21-EMA $(Fmt $ema21)"] = ($ema9 -gt $ema21)
+    $r.checks["RSI $([math]::Round($rsi, 1)) in $($cfg.rsiMin)-$($cfg.rsiMax)"] = ($rsi -ge $cfg.rsiMin -and $rsi -le $cfg.rsiMax)
+
+    # Candle trigger on the last completed candle.
+    $o = [double]$last.o; $h = [double]$last.h; $l = [double]$last.l
+    $body = [math]::Abs($price - $o)
+    $lowerWick = [math]::Min($o, $price) - $l
+    $upperWick = $h - [math]::Max($o, $price)
+    $engulf = ([double]$prev.c -lt [double]$prev.o) -and ($price -gt $o) -and ($o -le [double]$prev.c) -and ($price -ge [double]$prev.o)
+    $hammer = ($body -gt 0) -and ($lowerWick -ge 2 * $body) -and ($upperWick -le $body) -and ($l -le $ema21)
+    $prior4High = (@($bars[-5..-2] | ForEach-Object { [double]$_.h }) | Measure-Object -Maximum).Maximum
+    $breakout = ($price -gt $o) -and ($price -gt $prior4High)
+    $r.trigger = if ($engulf) { "bullish engulfing" } elseif ($hammer) { "hammer at the 21-EMA" } elseif ($breakout) { "breakout above $(Fmt $prior4High)" } else { $null }
+    $r.checks["candle trigger: $(if ($r.trigger) { $r.trigger } else { 'none' })"] = [bool]$r.trigger
+
+    $r.ok = -not ($r.checks.Values -contains $false)
+    return $r
+}
+
+function Show-Setup($s) {
+    Write-Host "  $($s.symbol): $(if ($s.ok) { 'ENTRY SIGNAL' } else { 'no entry' })"
+    foreach ($k in $s.checks.Keys) {
+        $v = $s.checks[$k]
+        $mark = if ($v -is [bool]) { if ($v) { "[x]" } else { "[ ]" } } else { "[!]" }
+        Write-Host "    $mark $k$(if ($v -isnot [bool]) { ": $v" })"
+    }
+}
+
+function In-EntryWindow {
+    $m = (To-ET ([DateTime]::UtcNow)).TimeOfDay.TotalMinutes
+    return ($m -ge (ET-Minutes $cfg.entryStartET) -and $m -lt (ET-Minutes $cfg.entryEndET))
+}
+
+# ---------- State ----------
+function New-TradeState($tradeCount, $cooldownUntil) {
+    return [pscustomobject]@{
+        phase = "scanning"; symbol = $null; tradeCount = $tradeCount; cooldownUntil = $cooldownUntil
+        setupEquity = $null; stopLossUSD = $null; ladderLossUSD = $null; trailActivateUSD = $null
+        entryOrderId = $null; entryQty = $null; entryPrice = $null; entrySignal = $null
+        ladderPrice = $null; ladderQty = $null; ladderDone = $false; ladderFillPrice = $null
+        floor = $null; stopOrderId = $null
+        trailingActive = $false; trailAnchor = $null
+    }
+}
+
+function Finish-Trade($reason) {
+    $count = 1 + $(if ($state.tradeCount) { [int]$state.tradeCount } else { 0 })
+    Write-Event "TRADE_CLOSED" $null $null $state.floor $null "$sym trade #$count closed: $reason; back to scanning"
+    $script:state = New-TradeState $count ([DateTime]::UtcNow.AddMinutes($cfg.cooldownMinutes).ToString("o"))
+}
+
 function Sell-All($reason) {
     Cancel-OpenOrders
     $pos = Get-Position
@@ -129,68 +271,56 @@ function Sell-All($reason) {
         $o = Submit-Market "sell" ([int]$pos.qty)
         Write-Event "SELL_ALL" $o.filled_qty $o.filled_avg_price $state.floor $o.id $reason
     }
-    $state.phase = "closed"
-    $state.closedReason = $reason
+    Finish-Trade $reason
 }
 
-# ---------- State ----------
 if (Test-Path $statePath) {
     $state = Get-Content $statePath -Raw | ConvertFrom-Json
-} else {
-    $state = [pscustomobject]@{
-        phase = "pending_entry"; symbol = $sym
-        setupEquity = $null; stopLossUSD = $null; ladderLossUSD = $null; trailActivateUSD = $null
-        entryOrderId = $null; entryQty = $null; entryPrice = $null
-        ladderPrice = $null; ladderQty = $null; ladderDone = $false; ladderFillPrice = $null
-        floor = $null; stopOrderId = $null
-        trailingActive = $false; trailAnchor = $null
-        closedReason = $null
+    # Older state files: "pending_entry" / "closed" mean there's no open trade.
+    if ($state.phase -in @("pending_entry", "closed")) { $state = New-TradeState $state.tradeCount $null }
+    foreach ($f in @("tradeCount", "cooldownUntil", "entrySignal")) {
+        if (-not ($state.PSObject.Properties.Name -contains $f)) { $state | Add-Member -NotePropertyName $f -NotePropertyValue $null }
     }
+} else {
+    $state = New-TradeState 0 $null
 }
+$sym = $state.symbol
 
 # ---------- Summary ----------
 if ($Summary) {
     $acct = Alpaca GET "/account"
     $eq = if ($state.setupEquity) { [double]$state.setupEquity } else { [double]$acct.equity }
-    $px = Get-LastPrice
-    Write-Host "=== Stacy: $sym (paper) ==="
-    Write-Host "Phase: $($state.phase)    Account equity now: `$$(Fmt $acct.equity)    Last $sym trade: `$$(Fmt $px)"
+    Write-Host "=== Stacy (paper) ==="
+    Write-Host "Phase: $($state.phase)    Trades closed: $([int]$state.tradeCount)    Account equity now: `$$(Fmt $acct.equity)"
     Write-Host ""
-    Write-Host "Rules (based on `$$(Fmt $eq) equity):"
+    Write-Host "Trade rules (based on `$$(Fmt $eq) equity):"
     Write-Host "  Entry     buy $($cfg.entryPctOfEquity)% of equity = ~`$$(Fmt ($eq * $cfg.entryPctOfEquity / 100)) in whole shares at market"
     Write-Host "  Floor     sell everything if total loss reaches `$$(Fmt ($eq * $cfg.stopLossPctOfEquity / 100))"
     Write-Host "  Ladder    once, at a `$$(Fmt ($eq * $cfg.ladderLossPctOfEquity / 100)) loss on the first lot, buy $($cfg.ladderSizeOfEntry * 100)% more shares; floor re-set so total loss still caps at `$$(Fmt ($eq * $cfg.stopLossPctOfEquity / 100))"
     Write-Host "  Trailing  at `$$(Fmt ($eq * $cfg.trailActivatePctOfEquity / 100)) profit, floor -> $($cfg.trailPct)% below price; again after each further +$($cfg.trailStepPct)%; never down"
     Write-Host ""
-    if ($state.entryPrice) {
-        Write-Host "Levels:"
+    if ($state.phase -eq "scanning") {
+        Write-Host "Scanning $($cfg.watchlist -join ', ') between $($cfg.entryStartET) and $($cfg.entryEndET) ET:"
+        foreach ($s in $cfg.watchlist) { Show-Setup (Find-Setup $s) }
+        if ($state.cooldownUntil) { Write-Host "  Cooldown until $((To-ET (To-Date $state.cooldownUntil)).ToString('MMM d HH:mm')) ET" }
+    } elseif ($state.entryPrice) {
+        Write-Host "Open trade in $sym$(if ($state.entrySignal) { " (entered on: $($state.entrySignal))" }):"
         Write-Host "  Entry      $($state.entryQty) sh @ `$$(Fmt $state.entryPrice)"
         Write-Host "  Floor      `$$(Fmt $state.floor)"
         if (-not $state.ladderDone) { Write-Host "  Ladder at  `$$(Fmt $state.ladderPrice) (buy $($state.ladderQty) sh)" }
         else { Write-Host "  Ladder     done: $($state.ladderQty) sh @ `$$(Fmt $state.ladderFillPrice)" }
         if ($state.trailingActive) { Write-Host "  Trailing   active; next step when price >= `$$(Fmt ($state.trailAnchor * (1 + $cfg.trailStepPct / 100)))" }
-        else {
-            $q = [int]$state.entryQty
-            Write-Host "  Trailing   starts when open profit >= `$$(Fmt $state.trailActivateUSD) (~`$$(Fmt ($state.entryPrice + $state.trailActivateUSD / $q)) with $q sh)"
-        }
-    } else {
-        $q = [math]::Floor($eq * $cfg.entryPctOfEquity / 100 / $px)
-        $sl = $eq * $cfg.stopLossPctOfEquity / 100
-        $ll = $eq * $cfg.ladderLossPctOfEquity / 100
-        $ta = $eq * $cfg.trailActivatePctOfEquity / 100
-        Write-Host "Planned levels at `$$(Fmt $px) (re-computed from the actual fill):"
-        Write-Host "  Entry      $q sh, ~`$$(Fmt ($q * $px))"
-        Write-Host "  Floor      ~`$$(Fmt (CentsUp ($px - $sl / $q)))  ($(Fmt ($sl / $q / $px * 100))% below entry)"
-        Write-Host "  Ladder at  ~`$$(Fmt ($px - $ll / $q)), buy $([math]::Floor($q * $cfg.ladderSizeOfEntry)) sh"
-        Write-Host "  Trailing   starts at ~`$$(Fmt ($px + $ta / $q))"
+        else { Write-Host "  Trailing   starts when open profit >= `$$(Fmt $state.trailActivateUSD)" }
     }
     Write-Host ""
-    Write-Host "Open orders:"
-    $open = Get-OpenOrders
-    if ($open.Count -eq 0) { Write-Host "  (none)" }
-    foreach ($o in $open) { Write-Host "  $($o.side) $($o.qty) $($o.type) stop=$($o.stop_price) tif=$($o.time_in_force) status=$($o.status) id=$($o.id)" }
-    $pos = Get-Position
-    Write-Host "Position: $(if ($pos) { "$($pos.qty) sh, avg `$$(Fmt $pos.avg_entry_price), P/L `$$(Fmt $pos.unrealized_pl)" } else { '(none)' })"
+    if ($sym) {
+        Write-Host "Open orders:"
+        $open = Get-OpenOrders
+        if ($open.Count -eq 0) { Write-Host "  (none)" }
+        foreach ($o in $open) { Write-Host "  $($o.side) $($o.qty) $($o.symbol) $($o.type) stop=$($o.stop_price) tif=$($o.time_in_force) status=$($o.status)" }
+    }
+    $positions = Get-AllPositions
+    Write-Host "Positions: $(if ($positions.Count) { ($positions | ForEach-Object { "$($_.qty) $($_.symbol), avg `$$(Fmt $_.avg_entry_price), P/L `$$(Fmt $_.unrealized_pl)" }) -join '; ' } else { '(none)' })"
     exit 0
 }
 
@@ -198,24 +328,39 @@ if ($Summary) {
 $clock = Alpaca GET "/clock"
 if (-not $clock.is_open -and -not $DryRun) { Write-Host "Market closed; nothing to do."; exit 0 }
 
-if ($state.phase -eq "closed") { Write-Host "Trade is finished ($($state.closedReason)). Delete state/stacy_state.json to start a new one."; exit 0 }
+# 1. Scan for an entry (only when there is no open trade).
+if ($state.phase -eq "scanning") {
+    if ($state.cooldownUntil -and [DateTime]::UtcNow -lt (To-Date $state.cooldownUntil)) { Write-Host "Cooling down after the last trade."; exit 0 }
+    if (-not (In-EntryWindow) -and -not $DryRun) { Write-Host "Outside the entry window ($($cfg.entryStartET)-$($cfg.entryEndET) ET)."; exit 0 }
+    $held = Get-AllPositions
+    if ($held.Count -gt 0) { Write-Host "Account already holds $(($held | ForEach-Object { $_.symbol }) -join ', '); only one trade at a time."; exit 0 }
 
-# 1. Entry
-if ($state.phase -eq "pending_entry") {
+    $pick = $null
+    foreach ($s in $cfg.watchlist) {
+        $setup = Find-Setup $s
+        Show-Setup $setup
+        if ($setup.ok -and -not $pick) { $pick = $setup }
+    }
+    if (-not $pick) { exit 0 }
+
+    $sym = $pick.symbol
     $acct = Alpaca GET "/account"
     $eq = [double]$acct.equity
-    $px = Get-LastPrice
+    $px = Get-LastPrice $sym
     $qty = [int][math]::Floor($eq * $cfg.entryPctOfEquity / 100 / $px)
+    if ($DryRun) { Write-Host "DRY RUN: would buy $qty $sym at market (~`$$(Fmt ($qty * $px))) on $($pick.trigger)."; exit 0 }
+    if ($qty -lt 1) { Write-Host "Not enough equity for one share of $sym."; exit 0 }
+
+    $state.symbol           = $sym
+    $state.entrySignal      = $pick.trigger
     $state.setupEquity      = $eq
     $state.stopLossUSD      = $eq * $cfg.stopLossPctOfEquity / 100
     $state.ladderLossUSD    = $eq * $cfg.ladderLossPctOfEquity / 100
     $state.trailActivateUSD = $eq * $cfg.trailActivatePctOfEquity / 100
-    if ($DryRun) { Write-Host "DRY RUN: would buy $qty $sym at market (~`$$(Fmt ($qty * $px)))."; exit 0 }
-    if (Get-Position) { Write-Error "Account already holds $sym; refusing to open a second trade."; exit 1 }
     $o = Alpaca POST "/orders" @{ symbol = $sym; qty = "$qty"; side = "buy"; type = "market"; time_in_force = "day" }
     $state.entryOrderId = $o.id
     $state.phase = "entry_submitted"
-    Write-Event "ENTRY_SUBMITTED" $qty $px $null $o.id "market buy, equity $(Fmt $eq)"
+    Write-Event "ENTRY_SUBMITTED" $qty $px $null $o.id "$sym $($pick.trigger); equity $(Fmt $eq)"
     Save-State
 }
 
@@ -232,11 +377,11 @@ if ($state.phase -eq "entry_submitted") {
         $state.ladderQty   = [int][math]::Floor($q * $cfg.ladderSizeOfEntry)
         $stop = Place-Stop $q $state.floor
         $state.phase = "active"
-        Write-Event "ENTRY_FILLED" $q $p $state.floor $o.id "ladder at $(Fmt $state.ladderPrice)"
+        Write-Event "ENTRY_FILLED" $q $p $state.floor $o.id "$sym ladder at $(Fmt $state.ladderPrice)"
         Write-Event "FLOOR_PLACED" $q $null $state.floor $stop.id "GTC stop sell"
     } elseif ($o.status -in @("canceled", "expired", "rejected")) {
         Write-Event "ENTRY_FAILED" $null $null $null $o.id $o.status
-        $state.phase = "pending_entry"
+        $state = New-TradeState $state.tradeCount $null
     } else {
         Write-Host "Entry order still $($o.status); will check next run."
     }
@@ -248,11 +393,12 @@ if ($state.phase -eq "active") {
     $pos = Get-Position
     if (-not $pos) {
         $stop = if ($state.stopOrderId) { Alpaca GET "/orders/$($state.stopOrderId)" }
-        $why = if ($stop -and $stop.status -eq "filled") { "floor hit at $(Fmt $stop.filled_avg_price)" } else { "position gone" }
-        Write-Event "CLOSED" $null $null $state.floor $state.stopOrderId $why
-        if ($stop -and $stop.status -eq "filled") { Write-Event "SOLD" $stop.filled_qty $stop.filled_avg_price $state.floor $stop.id "stop filled" }
+        if ($stop -and $stop.status -eq "filled") {
+            Write-Event "SOLD" $stop.filled_qty $stop.filled_avg_price $state.floor $stop.id "floor hit"
+            $why = "floor hit at $(Fmt $stop.filled_avg_price)"
+        } else { $why = "position gone" }
         Cancel-OpenOrders
-        $state.phase = "closed"; $state.closedReason = $why
+        Finish-Trade $why
         Save-State
         exit 0
     }
