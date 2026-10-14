@@ -16,5 +16,8 @@
     "stopOrderId":  "10f5e563-20f1-47a5-8760-2b8140670355",
     "trailingActive":  true,
     "trailAnchor":  370.69,
-    "closedReason":  null
+    "closedReason":  null,
+    "tradeCount":  null,
+    "cooldownUntil":  null,
+    "entrySignal":  null
 }
