@@ -2,7 +2,7 @@
     "date":  "2026-10-19",
     "startEquity":  9949.52,
     "tradedSymbols":  [
-
+                          "AAPL"
                       ],
-    "tradeCount":  0
+    "tradeCount":  1
 }
