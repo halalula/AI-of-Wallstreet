@@ -1,0 +1,33 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261020211948
+Username: runnervmuzpk7\runneradmin
+RunAs User: runnervmuzpk7\runneradmin
+Configuration Name: 
+Machine: runnervmuzpk7 (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\97bfdc13-405a-44cc-aa9c-1a2f61cdc97e.ps1'
+Process ID: 5348
+PSVersion: 5.1.26100.33648
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33648
+BuildVersion: 10.0.26100.33648
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-20 ===
+[2026-10-20T13:34:49.8749651Z] AAPL buy x7
+  1) Confidence level : 58.8
+  2) Result           : FILLED 7 @ $342.47
+
+[2026-10-20T13:34:49.9685461Z] AMZN buy x10
+  1) Confidence level : 46.0
+  2) Result           : FILLED 10 @ $262.77
+
+--- Summary ---
+Filled: 2  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts: 2
+**********************
+Windows PowerShell transcript end
+End time: 20261020211950
+**********************
