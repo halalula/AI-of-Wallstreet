@@ -1,0 +1,37 @@
+﻿=== Dobby report 2026-10-21 (copying: David Taylor, Cleo Fields, Jared Moskowitz) ===
+Account value: $10,072.60   cash: $820.51
+Since 2026-09-28: Dobby +0.73%  vs  SPY +1.03%  (edge -0.30 pts)
+
+Positions:
+  HD                     qty 4.244934044  value $  1,330.79  P/L $   130.45 (+10.9%)
+  MSFT                   qty 2.326981234  value $  1,239.35  P/L $    39.00 (+3.2%)
+  FITB                   qty 15.866725876  value $    837.92  P/L $    32.95 (+4.1%)
+  AAPL                   qty 2.401357235  value $    825.73  P/L $    25.59 (+3.2%)
+  AMGN                   qty 1.487424906  value $    651.25  P/L $    51.08 (+8.5%)
+  RPM                    qty 6.066680036  value $    605.94  P/L $     0.91 (+0.2%)
+  GOOG                   qty 1.757123116  value $    581.96  P/L $   -18.21 (-3.0%)
+  NFLX                   qty 8.900341094  value $    579.39  P/L $   -20.78 (-3.5%)
+  T                      qty 25.823303457  value $    567.60  P/L $   -37.44 (-6.2%)
+  AMAT                   qty 1.129343848  value $    451.74  P/L $  -145.71 (-24.4%)
+  AEP                    qty 3.404512558  value $    433.70  P/L $    33.84 (+8.5%)
+  GOOGL                  qty 1.166841705  value $    390.87  P/L $    -9.10 (-2.3%)
+  IBP                    qty 2.024460372  value $    380.34  P/L $   -19.58 (-4.9%)
+  AVGO                   qty 1.117632918  value $    375.52  P/L $   -24.34 (-6.1%)
+  PG                     qty 0.000000669  value $      0.00  P/L $     0.00 (+7.1%)
+
+Recent copy activity:
+  2026-10-02T15:34  fill   GOOG                 filled    avg price 341.564
+  2026-10-02T15:34  fill   MSFT                 filled    avg price 515.84
+  2026-10-02T15:34  fill   NFLX                 filled    avg price 67.432247
+  2026-10-02T15:34  fill   MSFT                 filled    avg price 515.84
+  2026-10-02T15:34  fill   HD                   filled    avg price 282.77
+  2026-10-02T15:34  fill   AMGN                 filled    avg price 403.496
+  2026-10-02T15:34  fill   HD                   filled    avg price 282.77
+  2026-10-16T19:43  buy    T                    pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  buy    FITB                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  buy    RPM                  pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  sell   PG                   pending_new copy stock sale ([ST] $1,001 - $15,000)
+  2026-10-19T14:00  fill   PG                   filled    avg price 159.23
+  2026-10-19T14:00  fill   RPM                  filled    avg price 99.73
+  2026-10-19T14:00  fill   T                    filled    avg price 23.43
+  2026-10-19T14:00  fill   FITB                 filled    avg price 50.45
