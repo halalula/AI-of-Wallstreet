@@ -1,9 +1,8 @@
 ﻿{
-    "date":  "2026-10-20",
-    "startEquity":  9962.09,
+    "date":  "2026-10-21",
+    "startEquity":  9975.39,
     "tradedSymbols":  [
-                          "AAPL",
-                          "AMZN"
+
                       ],
-    "tradeCount":  2
+    "tradeCount":  0
 }
