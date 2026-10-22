@@ -1,0 +1,33 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261022212030
+Username: runnervmuzpk7\runneradmin
+RunAs User: runnervmuzpk7\runneradmin
+Configuration Name: 
+Machine: runnervmuzpk7 (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\5b3801d5-b30c-47b7-8c77-e9c55fa14ce5.ps1'
+Process ID: 1976
+PSVersion: 5.1.26100.33648
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33648
+BuildVersion: 10.0.26100.33648
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-22 ===
+[2026-10-22T13:38:52.9881345Z] MSFT sell x4
+  1) Confidence level : 37.9
+  2) Result           : FILLED 4 @ $529.54
+
+[2026-10-22T13:38:53.1546536Z] GOOGL buy x1
+  1) Confidence level : 52.6
+  2) Result           : FILLED 1 @ $330.75
+
+--- Summary ---
+Filled: 2  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts: 2
+**********************
+Windows PowerShell transcript end
+End time: 20261022212032
+**********************
