@@ -2,7 +2,8 @@
     "date":  "2026-10-22",
     "startEquity":  9910.97,
     "tradedSymbols":  [
-
+                          "MSFT",
+                          "GOOGL"
                       ],
-    "tradeCount":  0
+    "tradeCount":  2
 }
