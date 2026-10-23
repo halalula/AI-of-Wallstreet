@@ -58,3 +58,7 @@
 2026-10-19T14:00:09.1852798Z,David Taylor,20035660-4,2026-10-09,2026-10-15T13:00:00Z,fill,RPM,6.066680036,5e1e2f09-ea5c-4a8e-a7af-0bc91e8ec987,filled,"avg price 99.73"
 2026-10-19T14:00:09.2327338Z,David Taylor,20035660-1,2026-10-09,2026-10-15T13:00:00Z,fill,T,25.823303457,8266e5bc-809c-4ae2-93ad-db24691b6f36,filled,"avg price 23.43"
 2026-10-19T14:00:09.3296114Z,David Taylor,20035660-2,2026-10-09,2026-10-15T13:00:00Z,fill,FITB,11.992864222,b338ca5e-deb7-4040-a07e-ed42f0bc93a9,filled,"avg price 50.45"
+2026-10-23T18:55:36.0429439Z,Cleo Fields,20035669-1,2026-10-01,2026-10-22T13:00:00Z,buy,NVDA,319.17,ac127ec3-fc0d-4377-8497-da9b2def9396,pending_new,"copy stock buy ([ST] $1,001 - $15,000)"
+2026-10-23T18:55:36.1527687Z,Cleo Fields,20035669-2,2026-10-01,2026-10-22T13:00:00Z,skip,NVDA,,,skipped,"budget 0.01 below minimum (cash or per-symbol cap)"
+2026-10-23T18:55:36.2427041Z,Cleo Fields,20035669-3,2026-10-01,2026-10-22T13:00:00Z,skip,NVDA,,,skipped,"budget 0.01 below minimum (cash or per-symbol cap)"
+2026-10-23T18:55:36.3364310Z,Cleo Fields,20035669-4,2026-10-09,2026-10-22T13:00:00Z,skip,TSM,,,skipped,"budget 0.01 below minimum (cash or per-symbol cap)"
