@@ -1,9 +1,8 @@
 ﻿{
-    "date":  "2026-10-23",
-    "startEquity":  9813.98,
+    "date":  "2026-10-26",
+    "startEquity":  9871.82,
     "tradedSymbols":  [
-                          "MSFT",
                           "AMZN"
                       ],
-    "tradeCount":  2
+    "tradeCount":  1
 }
