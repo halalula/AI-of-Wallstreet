@@ -1,0 +1,38 @@
+﻿=== Dobby report 2026-10-28 (copying: David Taylor, Cleo Fields, Jared Moskowitz) ===
+Account value: $10,052.29   cash: $501.34
+Since 2026-09-28: Dobby +0.52%  vs  SPY +0.58%  (edge -0.06 pts)
+
+Positions:
+  HD                     qty 4.244934044  value $  1,354.13  P/L $   153.79 (+12.8%)
+  MSFT                   qty 2.326981234  value $  1,267.51  P/L $    67.16 (+5.6%)
+  FITB                   qty 15.866725876  value $    848.39  P/L $    43.42 (+5.4%)
+  AAPL                   qty 2.401357235  value $    827.87  P/L $    27.73 (+3.5%)
+  AMGN                   qty 1.487424906  value $    689.03  P/L $    88.86 (+14.8%)
+  RPM                    qty 6.066680036  value $    602.18  P/L $    -2.85 (-0.5%)
+  NFLX                   qty 8.900341094  value $    553.78  P/L $   -46.39 (-7.7%)
+  T                      qty 25.823303457  value $    537.02  P/L $   -68.02 (-11.2%)
+  GOOG                   qty 1.757123116  value $    505.40  P/L $   -94.77 (-15.8%)
+  AMAT                   qty 1.129343848  value $    466.42  P/L $  -131.03 (-21.9%)
+  AEP                    qty 3.404512558  value $    449.33  P/L $    49.47 (+12.4%)
+  IBP                    qty 2.024460372  value $    404.69  P/L $     4.77 (+1.2%)
+  AVGO                   qty 1.117632918  value $    384.40  P/L $   -15.46 (-3.9%)
+  GOOGL                  qty 1.166841705  value $    338.32  P/L $   -61.65 (-15.4%)
+  NVDA                   qty 1.506622985  value $    322.48  P/L $     3.32 (+1.0%)
+  PG                     qty 0.000000669  value $      0.00  P/L $     0.00 (+8.1%)
+
+Recent copy activity:
+  2026-10-02T15:34  fill   AMGN                 filled    avg price 403.496
+  2026-10-02T15:34  fill   HD                   filled    avg price 282.77
+  2026-10-16T19:43  buy    T                    pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  buy    FITB                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  buy    RPM                  pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-16T19:43  sell   PG                   pending_new copy stock sale ([ST] $1,001 - $15,000)
+  2026-10-19T14:00  fill   PG                   filled    avg price 159.23
+  2026-10-19T14:00  fill   RPM                  filled    avg price 99.73
+  2026-10-19T14:00  fill   T                    filled    avg price 23.43
+  2026-10-19T14:00  fill   FITB                 filled    avg price 50.45
+  2026-10-23T18:55  buy    NVDA                 pending_new copy stock buy ([ST] $1,001 - $15,000)
+  2026-10-23T18:55  skip   NVDA                 skipped   budget 0.01 below minimum (cash or per-symbol cap)
+  2026-10-23T18:55  skip   NVDA                 skipped   budget 0.01 below minimum (cash or per-symbol cap)
+  2026-10-23T18:55  skip   TSM                  skipped   budget 0.01 below minimum (cash or per-symbol cap)
+  2026-10-23T19:45  fill   NVDA                 filled    avg price 211.838
