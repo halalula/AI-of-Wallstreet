@@ -1,0 +1,29 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261028212700
+Username: runnervmdaln5\runneradmin
+RunAs User: runnervmdaln5\runneradmin
+Configuration Name: 
+Machine: runnervmdaln5 (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command . 'D:\a\_temp\2060dfca-d724-422c-915e-c18a731375be.ps1'
+Process ID: 4036
+PSVersion: 5.1.26100.33648
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.33648
+BuildVersion: 10.0.26100.33648
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Mason trade report: 2026-10-28 ===
+[2026-10-28T13:49:59.4793252Z] AMZN buy x9
+  1) Confidence level : 48.8
+  2) Result           : FILLED 9 @ $253.562222
+
+--- Summary ---
+Filled: 1  Partially filled: 0  Open/Pending: 0  Failed: 0  Total attempts:
+**********************
+Windows PowerShell transcript end
+End time: 20261028212702
+**********************
