@@ -2,7 +2,7 @@
     "date":  "2026-10-28",
     "startEquity":  9902.07,
     "tradedSymbols":  [
-
+                          "AMZN"
                       ],
-    "tradeCount":  0
+    "tradeCount":  1
 }
