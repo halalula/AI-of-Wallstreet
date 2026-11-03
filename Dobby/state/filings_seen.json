@@ -250,5 +250,12 @@
         "filed":  "2026-10-22",
         "trades":  4,
         "note":  ""
+    },
+    {
+        "docId":  "20035727",
+        "politician":  "David Taylor",
+        "filed":  "2026-10-29",
+        "trades":  8,
+        "note":  ""
     }
 ]
