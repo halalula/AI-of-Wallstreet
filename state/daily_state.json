@@ -1,8 +1,10 @@
 ﻿{
-    "date":  "2026-11-05",
-    "startEquity":  9371.43,
+    "date":  "2026-11-06",
+    "startEquity":  9423,
     "tradedSymbols":  [
-
+                          "AAPL",
+                          "NVDA",
+                          "AMZN"
                       ],
-    "tradeCount":  0
+    "tradeCount":  3
 }
