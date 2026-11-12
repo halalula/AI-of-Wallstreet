@@ -1409,3 +1409,8 @@
 2026-11-11T20:01:34.8473602Z,paper,NVDA,45,45,True,36.0,sell,10,9a17439c-f495-4bc0-845b-268a1698419f,"submitted (paper)"
 2026-11-11T20:01:34.8473602Z,paper,GOOGL,44,52,False,47.2,hold,0,,""
 2026-11-11T20:01:34.8493744Z,paper,AMZN,59,50,False,55.4,hold,0,,""
+2026-11-12T20:39:56.0407085Z,paper,AAPL,42,48,False,44.4,sell,6,f82503a8-2bf0-4bfe-ab8d-f4ffad470bd5,"submitted (paper)"
+2026-11-12T20:39:56.0467897Z,paper,MSFT,67,52,False,61.0,hold,0,,""
+2026-11-12T20:39:56.1195650Z,paper,NVDA,49,45,False,47.4,buy,11,2aeb5beb-5110-41e5-94e2-013ed45ed844,"submitted (paper) [forced trade]"
+2026-11-12T20:39:56.1733327Z,paper,GOOGL,41,45,True,34.1,sell,1,829b928e-3d95-468d-86f7-8a9f4af6abbc,"submitted (paper)"
+2026-11-12T20:39:56.1753559Z,paper,AMZN,50,56,True,52.4,hold,0,,""
