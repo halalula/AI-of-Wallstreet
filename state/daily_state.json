@@ -1,9 +1,10 @@
 ﻿{
-    "date":  "2026-11-13",
-    "startEquity":  9457.61,
+    "date":  "2026-11-20",
+    "startEquity":  8453.64,
     "tradedSymbols":  [
-                          "AAPL",
-                          "GOOGL"
+                          "NVDA",
+                          "GOOGL",
+                          "AMZN"
                       ],
-    "tradeCount":  2
+    "tradeCount":  3
 }
